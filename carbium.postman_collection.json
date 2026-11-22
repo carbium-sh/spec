@@ -1,0 +1,3681 @@
+{
+ "info": {
+  "name": "carbium services",
+  "description": "Every JSON-RPC method served over HTTPS at services.carbium.sh (the WebSocket subscriptions are in openrpc.json), the REST form of the quote, and every account API call on carbium.sh.\n\nKeys: put serviceKey (a c_serv_ key) and accountKey (a c_acct_ key) in a Postman environment as current values, or in the Postman Vault, so a key never leaves with an exported or shared collection.\n\nDo not run the whole collection: the folder \"Changes the account\" creates, changes and removes keys and webhooks, and some JSON-RPC calls cost many credits. Send those one at a time.",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "variable": [
+  {
+   "key": "rpcUrl",
+   "value": "https://services.carbium.sh",
+   "type": "string"
+  },
+  {
+   "key": "accountUrl",
+   "value": "https://carbium.sh",
+   "type": "string"
+  },
+  {
+   "key": "serviceKey",
+   "value": "",
+   "type": "string"
+  },
+  {
+   "key": "accountKey",
+   "value": "",
+   "type": "string"
+  }
+ ],
+ "item": [
+  {
+   "name": "JSON-RPC",
+   "description": "One POST per method. A value in angle brackets is a placeholder to replace before sending.",
+   "auth": {
+    "type": "apikey",
+    "apikey": [
+     {
+      "key": "key",
+      "value": "x-api-key",
+      "type": "string"
+     },
+     {
+      "key": "value",
+      "value": "{{serviceKey}}",
+      "type": "string"
+     },
+     {
+      "key": "in",
+      "value": "header",
+      "type": "string"
+     }
+    ]
+   },
+   "item": [
+    {
+     "name": "Solana RPC",
+     "item": [
+      {
+       "name": "getAccountInfo",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAccountInfo\",\n  \"params\": [\n    \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\",\n    {\n      \"encoding\": \"base64\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAgGenesisCert",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAgGenesisCert\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getBalance",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBalance\",\n  \"params\": [\n    \"5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getBlock",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlock\",\n  \"params\": [\n    300000000,\n    {\n      \"encoding\": \"json\",\n      \"maxSupportedTransactionVersion\": 1,\n      \"transactionDetails\": \"none\",\n      \"rewards\": false\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getBlockCommitment",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlockCommitment\",\n  \"params\": [\n    300000000\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getBlockHeight",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlockHeight\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getBlockProduction",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlockProduction\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getBlocks",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlocks\",\n  \"params\": [\n    299999992,\n    300000000\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getBlocksWithLimit",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlocksWithLimit\",\n  \"params\": [\n    300000000,\n    8\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getBlockTime",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getBlockTime\",\n  \"params\": [\n    300000000\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getClusterNodes",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getClusterNodes\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getEpochInfo",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getEpochInfo\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getEpochSchedule",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getEpochSchedule\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getFeeForMessage",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getFeeForMessage\",\n  \"params\": [\n    \"<base64 message>\",\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getFirstAvailableBlock",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getFirstAvailableBlock\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getGenesisHash",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getGenesisHash\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getHealth",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getHealth\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getHighestSnapshotSlot",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getHighestSnapshotSlot\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getIdentity",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getIdentity\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getInflationGovernor",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getInflationGovernor\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getInflationRate",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getInflationRate\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getInflationReward",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getInflationReward\",\n  \"params\": [\n    [\n      \"<vote account>\"\n    ],\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getLargestAccounts",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getLargestAccounts\",\n  \"params\": [\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getLatestBlockhash",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getLatestBlockhash\",\n  \"params\": [\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getLeaderSchedule",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getLeaderSchedule\",\n  \"params\": [\n    null,\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getMaxRetransmitSlot",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getMaxRetransmitSlot\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getMaxShredInsertSlot",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getMaxShredInsertSlot\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getMinimumBalanceForRentExemption",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getMinimumBalanceForRentExemption\",\n  \"params\": [\n    128\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getMultipleAccounts",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getMultipleAccounts\",\n  \"params\": [\n    [\n      \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\",\n      \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\"\n    ],\n    {\n      \"encoding\": \"base64\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getPriorityFeeEstimate",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getPriorityFeeEstimate\",\n  \"params\": {\n    \"accountKeys\": [\n      \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n    ],\n    \"options\": {\n      \"includeAllPriorityFeeLevels\": true\n    }\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getProgramAccounts",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getProgramAccounts\",\n  \"params\": [\n    \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\n    {\n      \"encoding\": \"base64\",\n      \"filters\": [\n        {\n          \"dataSize\": 165\n        },\n        {\n          \"memcmp\": {\n            \"offset\": 32,\n            \"bytes\": \"D1HdVBH5Ya9qrDwJdtuEPmDXy6YuzsueNFH5ggKu5DMt\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getRecentPerformanceSamples",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getRecentPerformanceSamples\",\n  \"params\": [\n    5\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getRecentPrioritizationFees",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getRecentPrioritizationFees\",\n  \"params\": [\n    [\n      \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n    ]\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getSignaturesForAddress",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSignaturesForAddress\",\n  \"params\": [\n    \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\",\n    {\n      \"limit\": 10\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getSignatureStatuses",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSignatureStatuses\",\n  \"params\": [\n    [\n      \"<signature>\"\n    ],\n    {\n      \"searchTransactionHistory\": true\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getSlot",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSlot\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getSlotLeader",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSlotLeader\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getSlotLeaders",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSlotLeaders\",\n  \"params\": [\n    300000000,\n    3\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "The slot is an illustration: use a recent one from getSlot."
+       }
+      },
+      {
+       "name": "getStakeMinimumDelegation",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getStakeMinimumDelegation\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getSupply",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getSupply\",\n  \"params\": [\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getTokenAccountBalance",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTokenAccountBalance\",\n  \"params\": [\n    \"EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getTokenAccountsByDelegate",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTokenAccountsByDelegate\",\n  \"params\": [\n    \"<delegate>\",\n    {\n      \"mint\": \"<mint>\"\n    },\n    {\n      \"encoding\": \"base64\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getTokenAccountsByOwner",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTokenAccountsByOwner\",\n  \"params\": [\n    \"<owner>\",\n    {\n      \"mint\": \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n    },\n    {\n      \"encoding\": \"base64\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getTokenSupply",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTokenSupply\",\n  \"params\": [\n    \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getTransaction",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTransaction\",\n  \"params\": [\n    \"<signature>\",\n    {\n      \"encoding\": \"json\",\n      \"maxSupportedTransactionVersion\": 1\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getTransactionCount",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTransactionCount\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getTransactionsForAddress",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTransactionsForAddress\",\n  \"params\": [\n    \"<token account>\",\n    {\n      \"limit\": 100\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "getVersion",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getVersion\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getVoteAccounts",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getVoteAccounts\",\n  \"params\": [\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "isBlockhashValid",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"isBlockhashValid\",\n  \"params\": [\n    \"<blockhash>\",\n    {\n      \"commitment\": \"finalized\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "minimumLedgerSlot",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"minimumLedgerSlot\",\n  \"params\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "qn_estimatePriorityFees",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"qn_estimatePriorityFees\",\n  \"params\": {\n    \"last_n_blocks\": 100,\n    \"account\": \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\",\n    \"api_version\": 2\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "sendTransaction",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"sendTransaction\",\n  \"params\": [\n    \"<base64 signed transaction>\",\n    {\n      \"encoding\": \"base64\",\n      \"skipPreflight\": true\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      },
+      {
+       "name": "simulateTransaction",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"simulateTransaction\",\n  \"params\": [\n    \"<base64 transaction>\",\n    {\n      \"encoding\": \"base64\",\n      \"sigVerify\": false,\n      \"replaceRecentBlockhash\": true,\n      \"commitment\": \"processed\"\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      }
+     ]
+    },
+    {
+     "name": "DAS",
+     "item": [
+      {
+       "name": "getAsset",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAsset\",\n  \"params\": {\n    \"id\": \"JAYLzPNDmypGtp4h2K9NWMCHbxv8EhP3Br6czUGUtUFf\"\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssetBatch",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssetBatch\",\n  \"params\": {\n    \"ids\": [\n      \"J7KXUeM5hDcbB28Xg639jyCTW19PExRYz5uVVqSfVHzZ\",\n      \"3uSCP1NoHAdbHvq3Q5G7QYc6RSRGMxN2QN9LLrCQ9fn2\"\n    ]\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssets",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssets\",\n  \"params\": {\n    \"ids\": [\n      \"JEBKNi5Qxr2u4k6HrrvzGTPXRrHNRKuSw2Swomni8d8L\",\n      \"J8VnjcyxEe2Bnvs3nZQ8taqTDz6ebeuq3vY13cgvnTHU\"\n    ]\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssetsByAuthority",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssetsByAuthority\",\n  \"params\": {\n    \"authorityAddress\": \"5a3KGPWD3kfNh7nRcSecAe52XaJC1GJCorPFKAF18z2M\",\n    \"limit\": 50,\n    \"page\": 1,\n    \"sortBy\": {\n      \"sortBy\": \"id\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssetsByCreator",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssetsByCreator\",\n  \"params\": {\n    \"creatorAddress\": \"3AePGRNRoTdVm23cf7eahCofM2LFrWGHLsZshPgM9djz\",\n    \"onlyVerified\": true,\n    \"limit\": 50,\n    \"page\": 1,\n    \"sortBy\": {\n      \"sortBy\": \"id\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssetsByGroup",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssetsByGroup\",\n  \"params\": {\n    \"groupKey\": \"collection\",\n    \"groupValue\": \"8F1bswRfPyfkxserkVpVPxfHYpFoqed9JfjpWukassSB\",\n    \"limit\": 50,\n    \"page\": 1,\n    \"sortBy\": {\n      \"sortBy\": \"id\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getAssetsByOwner",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getAssetsByOwner\",\n  \"params\": {\n    \"ownerAddress\": \"DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H\",\n    \"limit\": 50,\n    \"page\": 1,\n    \"sortBy\": {\n      \"sortBy\": \"id\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getNftEditions",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getNftEditions\",\n  \"params\": {\n    \"mint\": \"DWcbwT6i8C1xZuqFqZroPKuwQwTdwoTawjUWsUDXjExo\",\n    \"limit\": 50,\n    \"page\": 1\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "getTokenAccounts",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"getTokenAccounts\",\n  \"params\": {\n    \"owner\": \"86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY\",\n    \"limit\": 50,\n    \"page\": 1\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "searchAssets",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"searchAssets\",\n  \"params\": {\n    \"limit\": 50,\n    \"page\": 1,\n    \"sortBy\": {\n      \"sortBy\": \"id\",\n      \"sortDirection\": \"asc\"\n    },\n    \"ownerAddress\": \"DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H\",\n    \"tokenType\": \"fungible\"\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      }
+     ]
+    },
+    {
+     "name": "Quote API",
+     "item": [
+      {
+       "name": "health",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"health\"\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "prices",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"prices\",\n  \"params\": {\n    \"mints\": [\n      \"So11111111111111111111111111111111111111112\",\n      \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\"\n    ]\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "quote",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"quote\",\n  \"params\": {\n    \"src_mint\": \"So11111111111111111111111111111111111111112\",\n    \"dst_mint\": \"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\",\n    \"amount_in\": \"1000000000\",\n    \"slippage_bps\": 50\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        }
+       }
+      },
+      {
+       "name": "swap",
+       "event": [
+        {
+         "listen": "test",
+         "script": {
+          "type": "text/javascript",
+          "exec": [
+           "pm.test('answers with a result', () => {",
+           "  pm.response.to.have.status(200)",
+           "  const body = pm.response.json()",
+           "  pm.expect(body, JSON.stringify(body.error)).to.not.have.property('error')",
+           "  pm.expect(body).to.have.property('result')",
+           "})"
+          ]
+         }
+        }
+       ],
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": "{{rpcUrl}}",
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"swap\",\n  \"params\": {\n    \"quote_id\": \"<quote_id>\",\n    \"user_pubkey\": \"<YOUR_PUBKEY>\",\n    \"compute_unit_price_micro_lamports\": 10000\n  }\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Replace each value in angle brackets with your own."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "REST",
+   "description": "One request per REST route. These routes have no schema in openrpc.json, which describes JSON-RPC only.",
+   "auth": {
+    "type": "apikey",
+    "apikey": [
+     {
+      "key": "key",
+      "value": "x-api-key",
+      "type": "string"
+     },
+     {
+      "key": "value",
+      "value": "{{serviceKey}}",
+      "type": "string"
+     },
+     {
+      "key": "in",
+      "value": "header",
+      "type": "string"
+     }
+    ]
+   },
+   "item": [
+    {
+     "name": "GET /cq1/quote",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('answers with a quote', () => {",
+         "  pm.response.to.have.status(200)",
+         "  const body = pm.response.json()",
+         "  pm.expect(body).to.be.an('object')",
+         "  pm.expect(body).to.have.property('destAmountOut')",
+         "})"
+        ]
+       }
+      }
+     ],
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{rpcUrl}}/cq1/quote?src_mint=So11111111111111111111111111111111111111112&dst_mint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount_in=10000000000&slippage_bps=50",
+       "host": [
+        "{{rpcUrl}}"
+       ],
+       "path": [
+        "cq1",
+        "quote"
+       ],
+       "query": [
+        {
+         "key": "src_mint",
+         "value": "So11111111111111111111111111111111111111112"
+        },
+        {
+         "key": "dst_mint",
+         "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+        },
+        {
+         "key": "amount_in",
+         "value": "10000000000"
+        },
+        {
+         "key": "slippage_bps",
+         "value": "50"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Account API",
+   "auth": {
+    "type": "bearer",
+    "bearer": [
+     {
+      "key": "token",
+      "value": "{{accountKey}}",
+      "type": "string"
+     }
+    ]
+   },
+   "item": [
+    {
+     "name": "Reads",
+     "item": [
+      {
+       "name": "GET /v1/keys",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value."
+       }
+      },
+      {
+       "name": "GET /v1/webhooks",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: your webhooks, without their address lists."
+       }
+      },
+      {
+       "name": "GET /v1/webhooks/{id}",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: the webhook with its addresses."
+       }
+      },
+      {
+       "name": "GET /v1/webhooks/{id}/deliveries",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id/deliveries",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id",
+          "deliveries"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none; ?limit=, ?before=. Answers: its delivery log, newest first."
+       }
+      },
+      {
+       "name": "GET /v1/usage",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/usage",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "usage"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; ?from= and ?to= as YYYY-MM-DD, given together, both days included (the last 7 days when left out; over 90 days is 400), ?key_id=, ?group=key. Answers: [{utc_day, method, method_class, call_count, credits_charged}], oldest day first; with group=key each row also carries its key_id (null for calls made before a key was rotated, or by a key since deleted). A key_id that is not yours is 404, and an answer of more than 50,000 rows is 400: narrow the range or name a key. Answers are kept 15 s."
+       }
+      },
+      {
+       "name": "GET /v1/keys/usage",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/usage",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          "usage"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {period_start, period_end, account_credits, keys: [{key_id, credits, calls}]}: this calendar month (UTC) per service key, revoked ones included. Calls made before a key was rotated, or by a key since deleted, count in account_credits only; account_credits is null when the read failed."
+       }
+      },
+      {
+       "name": "GET /v1/keys/load",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/load",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          "load"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: [{key_id, rps_current, class_rps}]: calls a second over the last 20 s for each live key, in all and per method class."
+       }
+      },
+      {
+       "name": "GET /v1/usage/hourly",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/usage/hourly",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "usage",
+          "hourly"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; ?from= and ?to= as RFC 3339 times, given together (the last 24 hours when left out; over 7 days is 400), ?key_id=. Answers: [{hour, key_id, method_class, calls, credits_charged, errors, resp_bytes}], kept 90 days; the newest hour can be two hours behind. Answers are kept 60 s."
+       }
+      },
+      {
+       "name": "GET /v1/usage/latency",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/usage/latency",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "usage",
+          "latency"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; the same ?from=, ?to= and ?key_id=. Answers: [{hour, key_id, method_class, calls, p50_ms, p95_ms, p99_ms}]: milliseconds with up to 3 decimals, kept 90 days. Answers are kept 60 s."
+       }
+      },
+      {
+       "name": "GET /v1/account",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {account_id, email, wallet, status, created_at, tier, term, payments}: the plan and its term, and the last 24 payments."
+       }
+      },
+      {
+       "name": "GET /v1/balance",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/balance",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "balance"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {granted, used, remaining}, in credits."
+       }
+      },
+      {
+       "name": "GET /v1/invoices",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/invoices",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "invoices"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: [{period_start, period_end, granted, used, current}]: credits per month, the running month first."
+       }
+      },
+      {
+       "name": "GET /v1/payments",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/payments",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "payments"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: your payments, newest first, 1,000 at most: id, amount_minor, currency, status, method, tier or module and plan, months, credits_granted, reference, paid_at."
+       }
+      },
+      {
+       "name": "GET /v1/modules",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/modules",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "modules"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: every module with its plans and what the account holds of it."
+       }
+      },
+      {
+       "name": "GET /v1/billing/crypto-intent/{id}",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/crypto-intent/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "crypto-intent",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: one on-chain payment of yours and its status: open, paid, held or expired."
+       }
+      },
+      {
+       "name": "GET /v1/api-key",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/api-key",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "api-key"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: the calling key's own record."
+       }
+      },
+      {
+       "name": "GET /v1/account/api-keys/{id}/activity",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/api-keys/:id/activity",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "api-keys",
+          ":id",
+          "activity"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none; ?limit= (50, at most 200), ?before= (a Unix-ms time). Answers: [{ts, action, request_id, detail}]: what the key changed, newest first; another key's id is 404."
+       }
+      },
+      {
+       "name": "GET /v1/account/api-keys",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/api-keys",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "api-keys"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: the live keys' records, newest first. Needs a dashboard session: an account API key is refused."
+       }
+      }
+     ]
+    },
+    {
+     "name": "Changes the account",
+     "description": "Each call here creates, changes or removes something on the account: POST /v1/keys, for one, creates a live key. Send them one at a time, never as a folder run.",
+     "item": [
+      {
+       "name": "POST /v1/keys",
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys"
+         ],
+         "variable": []
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"name\": \"indexer\",\n  \"scope\": [\n    \"rpc\",\n    \"ws\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc and quote (rpc, ws and grpc when left out; quote needs the Quote module). Answers: {key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module."
+       }
+      },
+      {
+       "name": "POST /v1/keys/{id}/rotate",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/rotate",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "rotate"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {prefix, raw_key}: a new value for the same key, mailed like a new key's; the old one is refused at once."
+       }
+      },
+      {
+       "name": "POST /v1/keys/{id}/revoke",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/revoke",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "revoke"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {applied}: true the first time, false on a repeat; every door refuses the key at once, and the first revoke mails a notice."
+       }
+      },
+      {
+       "name": "DELETE /v1/keys/{id}",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {deleted}: the key is gone from the list, and a live one is refused at every door; a repeat is 404."
+       }
+      },
+      {
+       "name": "POST /v1/keys/{id}/name",
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/name",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "name"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"name\": \"indexer\"\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {name}: up to 48 characters, \"\" clears it. Answers: {name}."
+       }
+      },
+      {
+       "name": "PATCH /v1/keys/{id}/scope",
+       "request": {
+        "method": "PATCH",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/scope",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "scope"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"scope\": [\n    \"rpc\",\n    \"grpc\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {scope}: the whole new list of planes, at least one. Answers: {key_id, scope}; the doors follow within a second."
+       }
+      },
+      {
+       "name": "PATCH /v1/keys/{id}/caps",
+       "request": {
+        "method": "PATCH",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/caps",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "caps"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"per_method_caps\": [\n    {\n      \"method_class\": \"gpa\",\n      \"rps_ceiling\": 5,\n      \"allow\": true\n    }\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan or gpa. Answers: the stored list; the doors follow at once."
+       }
+      },
+      {
+       "name": "PATCH /v1/keys/{id}/allowlist",
+       "request": {
+        "method": "PATCH",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/allowlist",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "allowlist"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"ip_allow\": [\n    \"203.0.113.7\",\n    \"198.51.100.0/24\"\n  ]\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {ip_allow}: the whole new list of IPv4 or IPv6 addresses and CIDRs, 16 at most; [] admits any address. Answers: {key_id, ip_allow}; a call from any other address is 403 at the door."
+       }
+      },
+      {
+       "name": "PATCH /v1/keys/{id}/limits",
+       "request": {
+        "method": "PATCH",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/limits",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "limits"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"max_connections\": 100,\n  \"max_inflight\": 50\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {max_connections, max_inflight}: 0 to 10,000 each; 0 or left out is the plan's own number, and both are replaced together. Answers: {max_connections, max_inflight}; the WebSocket and stream doors follow within 5 minutes."
+       }
+      },
+      {
+       "name": "POST /v1/webhooks",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks"
+         ],
+         "variable": []
+        },
+        "description": "Request: the create fields. Answers: {webhook, secret}: the signing secret, shown here once."
+       }
+      },
+      {
+       "name": "PATCH /v1/webhooks/{id}",
+       "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: any create field, status. Answers: the webhook."
+       }
+      },
+      {
+       "name": "DELETE /v1/webhooks/{id}",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {\"deleted\": true}."
+       }
+      },
+      {
+       "name": "POST /v1/webhooks/{id}/rotate",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id/rotate",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id",
+          "rotate"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {secret, secret_hint, previous_valid_until}."
+       }
+      },
+      {
+       "name": "POST /v1/webhooks/{id}/test",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/webhooks/:id/test",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "webhooks",
+          ":id",
+          "test"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: how one signed test event went."
+       }
+      },
+      {
+       "name": "POST /v1/modules/{module}",
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/modules/:module",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "modules",
+          ":module"
+         ],
+         "variable": [
+          {
+           "key": "module",
+           "value": ""
+          }
+         ]
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"plan\": \"free\"\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {plan}, or {} for the cheapest: a plan with no price (a priced one is 400 \"plan '<name>' must be purchased\"). Answers: the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit."
+       }
+      },
+      {
+       "name": "POST /v1/account/api-keys",
+       "request": {
+        "method": "POST",
+        "header": [
+         {
+          "key": "content-type",
+          "value": "application/json"
+         }
+        ],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/api-keys",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "api-keys"
+         ],
+         "variable": []
+        },
+        "body": {
+         "mode": "raw",
+         "raw": "{\n  \"name\": \"ci-agent\",\n  \"access\": \"full\",\n  \"expires_in_days\": 90,\n  \"ip_allow\": []\n}",
+         "options": {
+          "raw": {
+           "language": "json"
+          }
+         }
+        },
+        "description": "Request: {name, access, expires_in_days, ip_allow}: name 1 to 48 characters and access \"full\" or \"read\", both required; expires_in_days 30, 90 or 365 (null or left out: no expiry); ip_allow up to 16 addresses or CIDRs (left out: any address). Answers: the new key's record with its raw_key, this once; 409 at 5 live keys, 403 while the account is not active. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "DELETE /v1/account/api-keys/{id}",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/api-keys/:id",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "api-keys",
+          ":id"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {api_key_id, revoked}; a repeat answers the same. Needs a dashboard session: an account API key is refused."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

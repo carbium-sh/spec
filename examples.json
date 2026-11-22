@@ -1,0 +1,362 @@
+{
+ "accountSubscribe": [
+  "SysvarC1ock11111111111111111111111111111111",
+  {
+   "encoding": "base64",
+   "commitment": "finalized"
+  }
+ ],
+ "blockSubscribe": [
+  "all",
+  {
+   "encoding": "base64",
+   "transactionDetails": "signatures",
+   "maxSupportedTransactionVersion": 1
+  }
+ ],
+ "GET /cq1/quote": {
+  "src_mint": "So11111111111111111111111111111111111111112",
+  "dst_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "amount_in": "10000000000",
+  "slippage_bps": "50"
+ },
+ "getAccountInfo": [
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  {
+   "encoding": "base64"
+  }
+ ],
+ "getAgGenesisCert": [],
+ "getAsset": {
+  "id": "JAYLzPNDmypGtp4h2K9NWMCHbxv8EhP3Br6czUGUtUFf"
+ },
+ "getAssetBatch": {
+  "ids": [
+   "J7KXUeM5hDcbB28Xg639jyCTW19PExRYz5uVVqSfVHzZ",
+   "3uSCP1NoHAdbHvq3Q5G7QYc6RSRGMxN2QN9LLrCQ9fn2"
+  ]
+ },
+ "getAssets": {
+  "ids": [
+   "JEBKNi5Qxr2u4k6HrrvzGTPXRrHNRKuSw2Swomni8d8L",
+   "J8VnjcyxEe2Bnvs3nZQ8taqTDz6ebeuq3vY13cgvnTHU"
+  ]
+ },
+ "getAssetsByAuthority": {
+  "authorityAddress": "5a3KGPWD3kfNh7nRcSecAe52XaJC1GJCorPFKAF18z2M",
+  "limit": 50,
+  "page": 1,
+  "sortBy": {
+   "sortBy": "id",
+   "sortDirection": "asc"
+  }
+ },
+ "getAssetsByCreator": {
+  "creatorAddress": "3AePGRNRoTdVm23cf7eahCofM2LFrWGHLsZshPgM9djz",
+  "onlyVerified": true,
+  "limit": 50,
+  "page": 1,
+  "sortBy": {
+   "sortBy": "id",
+   "sortDirection": "asc"
+  }
+ },
+ "getAssetsByGroup": {
+  "groupKey": "collection",
+  "groupValue": "8F1bswRfPyfkxserkVpVPxfHYpFoqed9JfjpWukassSB",
+  "limit": 50,
+  "page": 1,
+  "sortBy": {
+   "sortBy": "id",
+   "sortDirection": "asc"
+  }
+ },
+ "getAssetsByOwner": {
+  "ownerAddress": "DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H",
+  "limit": 50,
+  "page": 1,
+  "sortBy": {
+   "sortBy": "id",
+   "sortDirection": "asc"
+  }
+ },
+ "getBalance": [
+  "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"
+ ],
+ "getBlock": [
+  300000000,
+  {
+   "encoding": "json",
+   "maxSupportedTransactionVersion": 1,
+   "transactionDetails": "none",
+   "rewards": false
+  }
+ ],
+ "getBlockCommitment": [
+  300000000
+ ],
+ "getBlockHeight": [],
+ "getBlockProduction": [],
+ "getBlocks": [
+  299999992,
+  300000000
+ ],
+ "getBlocksWithLimit": [
+  300000000,
+  8
+ ],
+ "getBlockTime": [
+  300000000
+ ],
+ "getClusterNodes": [],
+ "getEpochInfo": [],
+ "getEpochSchedule": [],
+ "getFeeForMessage": [
+  "<base64 message>",
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getFirstAvailableBlock": [],
+ "getGenesisHash": [],
+ "getHealth": [],
+ "getHighestSnapshotSlot": [],
+ "getIdentity": [],
+ "getInflationGovernor": [],
+ "getInflationRate": [],
+ "getInflationReward": [
+  [
+   "<vote account>"
+  ],
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getLargestAccounts": [
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getLatestBlockhash": [
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getLeaderSchedule": [
+  null,
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getMaxRetransmitSlot": [],
+ "getMaxShredInsertSlot": [],
+ "getMinimumBalanceForRentExemption": [
+  128
+ ],
+ "getMultipleAccounts": [
+  [
+   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+  ],
+  {
+   "encoding": "base64"
+  }
+ ],
+ "getNftEditions": {
+  "mint": "DWcbwT6i8C1xZuqFqZroPKuwQwTdwoTawjUWsUDXjExo",
+  "limit": 50,
+  "page": 1
+ },
+ "getPriorityFeeEstimate": [
+  {
+   "accountKeys": [
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+   ],
+   "options": {
+    "includeAllPriorityFeeLevels": true
+   }
+  }
+ ],
+ "getProgramAccounts": [
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  {
+   "encoding": "base64",
+   "filters": [
+    {
+     "dataSize": 165
+    },
+    {
+     "memcmp": {
+      "offset": 32,
+      "bytes": "D1HdVBH5Ya9qrDwJdtuEPmDXy6YuzsueNFH5ggKu5DMt"
+     }
+    }
+   ]
+  }
+ ],
+ "getRecentPerformanceSamples": [
+  5
+ ],
+ "getRecentPrioritizationFees": [
+  [
+   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  ]
+ ],
+ "getSignaturesForAddress": [
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  {
+   "limit": 10
+  }
+ ],
+ "getSignatureStatuses": [
+  [
+   "<signature>"
+  ],
+  {
+   "searchTransactionHistory": true
+  }
+ ],
+ "getSlot": [],
+ "getSlotLeader": [],
+ "getSlotLeaders": [
+  300000000,
+  3
+ ],
+ "getStakeMinimumDelegation": [],
+ "getSupply": [
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "getTokenAccountBalance": [
+  "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9"
+ ],
+ "getTokenAccounts": {
+  "owner": "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY",
+  "limit": 50,
+  "page": 1
+ },
+ "getTokenAccountsByDelegate": [
+  "<delegate>",
+  {
+   "mint": "<mint>"
+  },
+  {
+   "encoding": "base64"
+  }
+ ],
+ "getTokenAccountsByOwner": [
+  "<owner>",
+  {
+   "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  },
+  {
+   "encoding": "base64"
+  }
+ ],
+ "getTokenSupply": [
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+ ],
+ "getTransaction": [
+  "<signature>",
+  {
+   "encoding": "json",
+   "maxSupportedTransactionVersion": 1
+  }
+ ],
+ "getTransactionCount": [],
+ "getTransactionsForAddress": [
+  "<token account>",
+  {
+   "limit": 100
+  }
+ ],
+ "getVersion": [],
+ "getVoteAccounts": [
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "health": [],
+ "isBlockhashValid": [
+  "<blockhash>",
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "logsSubscribe": [
+  "all"
+ ],
+ "minimumLedgerSlot": [],
+ "prices": [
+  {
+   "mints": [
+    "So11111111111111111111111111111111111111112",
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+   ]
+  }
+ ],
+ "programSubscribe": [
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  {
+   "encoding": "base64"
+  }
+ ],
+ "qn_estimatePriorityFees": [
+  {
+   "last_n_blocks": 100,
+   "account": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+   "api_version": 2
+  }
+ ],
+ "quote": [
+  {
+   "src_mint": "So11111111111111111111111111111111111111112",
+   "dst_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+   "amount_in": "1000000000",
+   "slippage_bps": 50
+  }
+ ],
+ "rootSubscribe": [],
+ "searchAssets": {
+  "limit": 50,
+  "page": 1,
+  "sortBy": {
+   "sortBy": "id",
+   "sortDirection": "asc"
+  },
+  "ownerAddress": "DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H",
+  "tokenType": "fungible"
+ },
+ "sendTransaction": [
+  "<base64 signed transaction>",
+  {
+   "encoding": "base64",
+   "skipPreflight": true
+  }
+ ],
+ "signatureSubscribe": [
+  "<signature>",
+  {
+   "commitment": "finalized"
+  }
+ ],
+ "simulateTransaction": [
+  "<base64 transaction>",
+  {
+   "encoding": "base64",
+   "sigVerify": false,
+   "replaceRecentBlockhash": true,
+   "commitment": "processed"
+  }
+ ],
+ "slotSubscribe": [],
+ "slotsUpdatesSubscribe": [],
+ "swap": [
+  {
+   "quote_id": "<quote_id>",
+   "user_pubkey": "<YOUR_PUBKEY>",
+   "compute_unit_price_micro_lamports": 10000
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Runs the leak check on every commit about to be pushed. Enable once per clone: git config core.hooksPath hooks
+set -euo pipefail
+
+remote="$1"
+check="$(git rev-parse --show-toplevel)/scripts/leak-check.sh"
+status=0
+
+while read -r _ local_sha _ remote_sha; do
+  case "$local_sha" in *[!0]*) ;; *) continue ;; esac   # a delete pushes nothing
+  if git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+    "$check" "$local_sha" "^$remote_sha" || status=1
+  else
+    # A new ref, or a remote commit this clone does not have: check all that this remote is not known to hold.
+    "$check" "$local_sha" --not --remotes="$remote" || status=1
+  fi
+done
+
+exit "$status"

@@ -1,0 +1,25 @@
+# Whitelist: everything is ignored unless allowed below.
+/*
+!/.gitignore
+!/.github/
+!/hooks/
+!/scripts/
+!/test/
+!/LICENSE
+!/README.md
+!/package.json
+!/pnpm-lock.yaml
+!/served.json
+!/examples.json
+!/openrpc.json
+!/openapi.json
+!/carbium.postman_collection.json
+
+# Denies last (they win over the allows above).
+node_modules/
+.env*
+*.env
+*.key
+*secret*
+*keypair*
+*.local.*

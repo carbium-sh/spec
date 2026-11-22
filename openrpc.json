@@ -1,0 +1,7951 @@
+{
+ "openrpc": "1.4.1",
+ "info": {
+  "title": "carbium services JSON-RPC",
+  "version": "0.1.0",
+  "description": "Every JSON-RPC method served at services.carbium.sh: Solana RPC, DAS, the quote API and the WebSocket subscriptions. Send the API key in the x-api-key header.",
+  "license": {
+   "name": "MIT"
+  },
+  "x-sdk-commit": "56057543fce1b1e366a4aa5bf90feaff2902c718"
+ },
+ "servers": [
+  {
+   "name": "mainnet",
+   "url": "https://services.carbium.sh"
+  }
+ ],
+ "methods": [
+  {
+   "name": "getAccountInfo",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "pubkey",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/AccountInfoConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_AccountInfo_null"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "pubkey",
+       "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getAgGenesisCert",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {}
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getAsset",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "id",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAsset"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "id",
+       "value": "JAYLzPNDmypGtp4h2K9NWMCHbxv8EhP3Br6czUGUtUFf"
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssetBatch",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "ids",
+     "required": true,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DasAsset"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "ids",
+       "value": [
+        "J7KXUeM5hDcbB28Xg639jyCTW19PExRYz5uVVqSfVHzZ",
+        "3uSCP1NoHAdbHvq3Q5G7QYc6RSRGMxN2QN9LLrCQ9fn2"
+       ]
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssets",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "ids",
+     "required": true,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DasAsset"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "ids",
+       "value": [
+        "JEBKNi5Qxr2u4k6HrrvzGTPXRrHNRKuSw2Swomni8d8L",
+        "J8VnjcyxEe2Bnvs3nZQ8taqTDz6ebeuq3vY13cgvnTHU"
+       ]
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssetsByAuthority",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "authorityAddress",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "before",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "after",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "sortBy",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasSort"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAssetList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "authorityAddress",
+       "value": "5a3KGPWD3kfNh7nRcSecAe52XaJC1GJCorPFKAF18z2M"
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      },
+      {
+       "name": "sortBy",
+       "value": {
+        "sortBy": "id",
+        "sortDirection": "asc"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssetsByCreator",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "creatorAddress",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "onlyVerified",
+     "required": false,
+     "schema": {
+      "type": "boolean"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "before",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "after",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "sortBy",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasSort"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAssetList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "creatorAddress",
+       "value": "3AePGRNRoTdVm23cf7eahCofM2LFrWGHLsZshPgM9djz"
+      },
+      {
+       "name": "onlyVerified",
+       "value": true
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      },
+      {
+       "name": "sortBy",
+       "value": {
+        "sortBy": "id",
+        "sortDirection": "asc"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssetsByGroup",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "groupKey",
+     "required": true,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "groupValue",
+     "required": true,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "before",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "after",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "sortBy",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasSort"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAssetList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "groupKey",
+       "value": "collection"
+      },
+      {
+       "name": "groupValue",
+       "value": "8F1bswRfPyfkxserkVpVPxfHYpFoqed9JfjpWukassSB"
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      },
+      {
+       "name": "sortBy",
+       "value": {
+        "sortBy": "id",
+        "sortDirection": "asc"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getAssetsByOwner",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "ownerAddress",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "before",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "after",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "sortBy",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasSort"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAssetList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "ownerAddress",
+       "value": "DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H"
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      },
+      {
+       "name": "sortBy",
+       "value": {
+        "sortBy": "id",
+        "sortDirection": "asc"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getBalance",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "pubkey",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "pubkey",
+       "value": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getBlock",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "slot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/BlockConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "anyOf": [
+      {
+       "$ref": "#/components/schemas/Block"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "slot",
+       "value": 300000000
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "transactionDetails": "none",
+        "rewards": false
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getBlockCommitment",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "slot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/BlockCommitment"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "slot",
+       "value": 300000000
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getBlockHeight",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getBlockProduction",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/BlockProductionConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_BlockProduction"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getBlocks",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "startSlot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "endSlot",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "startSlot",
+       "value": 299999992
+      },
+      {
+       "name": "endSlot",
+       "value": 300000000
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getBlocksWithLimit",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "startSlot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "startSlot",
+       "value": 300000000
+      },
+      {
+       "name": "limit",
+       "value": 8
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getBlockTime",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "slot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": [
+      "number",
+      "null"
+     ]
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "slot",
+       "value": 300000000
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getClusterNodes",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "$ref": "#/components/schemas/ClusterNode"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getEpochInfo",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/EpochInfo"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getEpochSchedule",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/EpochSchedule"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getFeeForMessage",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "message",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base64"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_number_null"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "message",
+       "value": "<base64 message>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getFirstAvailableBlock",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getGenesisHash",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Base58"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getHealth",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "string",
+     "const": "ok"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getHighestSnapshotSlot",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/HighestSnapshotSlot"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getIdentity",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "object",
+     "properties": {
+      "identity": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     },
+     "required": [
+      "identity"
+     ]
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getInflationGovernor",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/InflationGovernor"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getInflationRate",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/InflationRate"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getInflationReward",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "addresses",
+     "required": true,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       "epoch": {
+        "type": "number"
+       },
+       "minContextSlot": {
+        "type": "number"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/InflationReward"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "addresses",
+       "value": [
+        "<vote account>"
+       ]
+      },
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getLargestAccounts",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_LargestAccount_array"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getLatestBlockhash",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_LatestBlockhash"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getLeaderSchedule",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "slot",
+     "required": false,
+     "schema": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/LeaderScheduleConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/LeaderSchedule"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "slot",
+       "value": null
+      },
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getMaxRetransmitSlot",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getMaxShredInsertSlot",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getMinimumBalanceForRentExemption",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "dataLength",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "dataLength",
+       "value": 128
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getMultipleAccounts",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "pubkeys",
+     "required": true,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/AccountInfoConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_AccountInfo_null_array"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "pubkeys",
+       "value": [
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+       ]
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getNftEditions",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "mint",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasEditionList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "mint",
+       "value": "DWcbwT6i8C1xZuqFqZroPKuwQwTdwoTawjUWsUDXjExo"
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getPriorityFeeEstimate",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "accountKeys",
+     "required": false,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "transaction",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "priorityLevel": {
+        "$ref": "#/components/schemas/PriorityLevel"
+       },
+       "includeAllPriorityFeeLevels": {
+        "type": "boolean"
+       },
+       "recommended": {
+        "type": "boolean"
+       },
+       "lookbackSlots": {
+        "type": "number"
+       },
+       "transactionEncoding": {
+        "$ref": "#/components/schemas/BinaryEncoding"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/PriorityFeeEstimate"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "accountKeys",
+       "value": [
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+       ]
+      },
+      {
+       "name": "options",
+       "value": {
+        "includeAllPriorityFeeLevels": true
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getProgramAccounts",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "programId",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/ProgramAccountsConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "anyOf": [
+      {
+       "type": "array",
+       "items": {
+        "$ref": "#/components/schemas/KeyedAccount"
+       }
+      },
+      {
+       "$ref": "#/components/schemas/WithContext_KeyedAccount_array"
+      }
+     ]
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "programId",
+       "value": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64",
+        "filters": [
+         {
+          "dataSize": 165
+         },
+         {
+          "memcmp": {
+           "offset": 32,
+           "bytes": "D1HdVBH5Ya9qrDwJdtuEPmDXy6YuzsueNFH5ggKu5DMt"
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getRecentPerformanceSamples",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "$ref": "#/components/schemas/PerformanceSample"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "limit",
+       "value": 5
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getRecentPrioritizationFees",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "addresses",
+     "required": false,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "$ref": "#/components/schemas/PrioritizationFee"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "addresses",
+       "value": [
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+       ]
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getSignaturesForAddress",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "address",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/SignaturesForAddressConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "$ref": "#/components/schemas/SignatureInfo"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "address",
+       "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      {
+       "name": "config",
+       "value": {
+        "limit": 10
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getSignatureStatuses",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "signatures",
+     "required": true,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "searchTransactionHistory": {
+        "type": "boolean"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_SignatureStatus_null_array"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "signatures",
+       "value": [
+        "<signature>"
+       ]
+      },
+      {
+       "name": "config",
+       "value": {
+        "searchTransactionHistory": true
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getSlot",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getSlotLeader",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Base58"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getSlotLeaders",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "startSlot",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "array",
+     "items": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "The slot is an illustration: use a recent one from getSlot.",
+     "params": [
+      {
+       "name": "startSlot",
+       "value": 300000000
+      },
+      {
+       "name": "limit",
+       "value": 3
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getStakeMinimumDelegation",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getSupply",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "excludeNonCirculatingAccountsList": {
+        "type": "boolean"
+       },
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       "minContextSlot": {
+        "type": "number"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_Supply"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getTokenAccountBalance",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "tokenAccount",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_TokenAmount"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "tokenAccount",
+       "value": "EUuUbDcafPrmVTD5M6qoJAoyyNbihBhugADAxRMn5he9"
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getTokenAccounts",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "owner",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "mint",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "showZeroBalance": {
+        "type": "boolean"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasTokenAccountList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "owner",
+       "value": "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY"
+      },
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "getTokenAccountsByDelegate",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "delegate",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "filter",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/TokenAccountsFilter"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/AccountInfoConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_KeyedAccount_array"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "delegate",
+       "value": "<delegate>"
+      },
+      {
+       "name": "filter",
+       "value": {
+        "mint": "<mint>"
+       }
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getTokenAccountsByOwner",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "owner",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "filter",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/TokenAccountsFilter"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/AccountInfoConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_KeyedAccount_array"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "owner",
+       "value": "<owner>"
+      },
+      {
+       "name": "filter",
+       "value": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+       }
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "getTokenSupply",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "mint",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_TokenAmount"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "mint",
+       "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getTransaction",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "signature",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/TransactionConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "anyOf": [
+      {
+       "$ref": "#/components/schemas/TransactionWithMeta"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "signature",
+       "value": "<signature>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": true
+  },
+  {
+   "name": "getTransactionCount",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getTransactionsForAddress",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "address",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/TransactionsForAddressConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/TransactionsForAddress"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "address",
+       "value": "<token account>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "limit": 100
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": true
+  },
+  {
+   "name": "getVersion",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Version"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "getVoteAccounts",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/VoteAccountsConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/VoteAccounts"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "health",
+   "tags": [
+    {
+     "name": "quote"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/QuoteHealth"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "isBlockhashValid",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "blockhash",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/CommitmentConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "blockhash",
+       "value": "<blockhash>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "minimumLedgerSlot",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "number"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "prices",
+   "tags": [
+    {
+     "name": "quote"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "mints",
+     "required": false,
+     "schema": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Prices"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "mints",
+       "value": [
+        "So11111111111111111111111111111111111111112",
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+       ]
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "qn_estimatePriorityFees",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "last_n_blocks",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "account",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "api_version",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/QnPriorityFees"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "last_n_blocks",
+       "value": 100
+      },
+      {
+       "name": "account",
+       "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      {
+       "name": "api_version",
+       "value": 2
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "quote",
+   "tags": [
+    {
+     "name": "quote"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "src_mint",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "dst_mint",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "amount_in",
+     "required": true,
+     "schema": {
+      "type": [
+       "number",
+       "string"
+      ]
+     }
+    },
+    {
+     "name": "slippage_bps",
+     "required": true,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "dex",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "name": "dexes",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "name": "txVersion",
+     "required": false,
+     "schema": {
+      "type": "number",
+      "enum": [
+       0,
+       1
+      ]
+     }
+    },
+    {
+     "name": "swapTag",
+     "required": false,
+     "schema": {
+      "type": "number",
+      "enum": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Quote"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "src_mint",
+       "value": "So11111111111111111111111111111111111111112"
+      },
+      {
+       "name": "dst_mint",
+       "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      {
+       "name": "amount_in",
+       "value": "1000000000"
+      },
+      {
+       "name": "slippage_bps",
+       "value": 50
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "searchAssets",
+   "tags": [
+    {
+     "name": "das"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "page",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "limit",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "cursor",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "before",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "after",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "sortBy",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasSort"
+     }
+    },
+    {
+     "name": "options",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "displayOptions",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     }
+    },
+    {
+     "name": "ownerAddress",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "creatorAddress",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "creatorVerified",
+     "required": false,
+     "schema": {
+      "type": "boolean"
+     }
+    },
+    {
+     "name": "authorityAddress",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "grouping",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasGrouping"
+     }
+    },
+    {
+     "name": "interface",
+     "required": false,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "tokenType",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/DasTokenType"
+     }
+    },
+    {
+     "name": "frozen",
+     "required": false,
+     "schema": {
+      "type": "boolean"
+     }
+    },
+    {
+     "name": "delegate",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "burnt",
+     "required": false,
+     "schema": {
+      "type": "boolean"
+     }
+    },
+    {
+     "name": "compressed",
+     "required": false,
+     "schema": {
+      "type": "boolean"
+     }
+    },
+    {
+     "name": "negate",
+     "required": false,
+     "schema": {
+      "type": "boolean",
+      "const": false
+     }
+    },
+    {
+     "name": "conditionType",
+     "required": false,
+     "schema": {
+      "type": "string",
+      "const": "all"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/DasAssetList"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "limit",
+       "value": 50
+      },
+      {
+       "name": "page",
+       "value": 1
+      },
+      {
+       "name": "sortBy",
+       "value": {
+        "sortBy": "id",
+        "sortDirection": "asc"
+       }
+      },
+      {
+       "name": "ownerAddress",
+       "value": "DFFiJgCASVfPEQgRkrjkYAPGtFyo2pygx9aGp5XpMT9H"
+      },
+      {
+       "name": "tokenType",
+       "value": "fungible"
+      }
+     ]
+    }
+   ],
+   "x-batch": "das",
+   "x-permit": false
+  },
+  {
+   "name": "sendTransaction",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "signedTransaction",
+     "required": true,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/SendTransactionConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Base58"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "signedTransaction",
+       "value": "<base64 signed transaction>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64",
+        "skipPreflight": true
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "simulateTransaction",
+   "tags": [
+    {
+     "name": "rpc"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "transaction",
+     "required": true,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/SimulateTransactionConfig"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/WithContext_SimulateTransactionResult"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "transaction",
+       "value": "<base64 transaction>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64",
+        "sigVerify": false,
+        "replaceRecentBlockhash": true,
+        "commitment": "processed"
+       }
+      }
+     ]
+    }
+   ],
+   "x-batch": "any",
+   "x-permit": false
+  },
+  {
+   "name": "swap",
+   "tags": [
+    {
+     "name": "quote"
+    }
+   ],
+   "paramStructure": "by-name",
+   "params": [
+    {
+     "name": "quote_id",
+     "required": true,
+     "schema": {
+      "type": "string"
+     }
+    },
+    {
+     "name": "user_pubkey",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "compute_unit_price_micro_lamports",
+     "required": false,
+     "schema": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "$ref": "#/components/schemas/Swap"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "quote_id",
+       "value": "<quote_id>"
+      },
+      {
+       "name": "user_pubkey",
+       "value": "<YOUR_PUBKEY>"
+      },
+      {
+       "name": "compute_unit_price_micro_lamports",
+       "value": 10000
+      }
+     ]
+    }
+   ],
+   "x-batch": "never",
+   "x-permit": false
+  },
+  {
+   "name": "accountSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "pubkey",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       "encoding": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/Encoding"
+         },
+         {
+          "type": "string",
+          "const": "binary"
+         }
+        ]
+       },
+       "dataSlice": {
+        "$ref": "#/components/schemas/DataSlice"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "pubkey",
+       "value": "SysvarC1ock11111111111111111111111111111111"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64",
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-notification": {
+    "method": "accountNotification",
+    "result": {
+     "$ref": "#/components/schemas/WithContext_AccountInfo"
+    }
+   }
+  },
+  {
+   "name": "accountUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "blockSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "filter",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/BlockFilter"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/SettledCommitment"
+       },
+       "encoding": {
+        "$ref": "#/components/schemas/BlockEncoding"
+       },
+       "transactionDetails": {
+        "$ref": "#/components/schemas/BlockSubscribeDetails"
+       },
+       "showRewards": {
+        "type": "boolean"
+       },
+       "maxSupportedTransactionVersion": {
+        "type": "number"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "filter",
+       "value": "all"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64",
+        "transactionDetails": "signatures",
+        "maxSupportedTransactionVersion": 1
+       }
+      }
+     ]
+    }
+   ],
+   "x-notification": {
+    "method": "blockNotification",
+    "result": {
+     "$ref": "#/components/schemas/WithContext_BlockNotification"
+    }
+   }
+  },
+  {
+   "name": "blockUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "logsSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "filter",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/LogsFilter"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "filter",
+       "value": "all"
+      }
+     ]
+    }
+   ],
+   "x-notification": {
+    "method": "logsNotification",
+    "result": {
+     "$ref": "#/components/schemas/WithContext_LogsNotification"
+    }
+   }
+  },
+  {
+   "name": "logsUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "programSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "programId",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       "encoding": {
+        "$ref": "#/components/schemas/Encoding"
+       },
+       "dataSlice": {
+        "$ref": "#/components/schemas/DataSlice"
+       },
+       "filters": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/ProgramSubscribeFilter"
+        }
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "programId",
+       "value": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+      },
+      {
+       "name": "config",
+       "value": {
+        "encoding": "base64"
+       }
+      }
+     ]
+    }
+   ],
+   "x-notification": {
+    "method": "programNotification",
+    "result": {
+     "$ref": "#/components/schemas/WithContext_KeyedAccount"
+    }
+   }
+  },
+  {
+   "name": "programUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "rootSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-notification": {
+    "method": "rootNotification",
+    "result": {
+     "type": "number"
+    }
+   }
+  },
+  {
+   "name": "rootUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "signatureSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "signature",
+     "required": true,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    },
+    {
+     "name": "config",
+     "required": false,
+     "schema": {
+      "type": "object",
+      "properties": {
+       "commitment": {
+        "$ref": "#/components/schemas/Commitment"
+       }
+      }
+     }
+    }
+   ],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "description": "Replace each value in angle brackets with your own.",
+     "params": [
+      {
+       "name": "signature",
+       "value": "<signature>"
+      },
+      {
+       "name": "config",
+       "value": {
+        "commitment": "finalized"
+       }
+      }
+     ]
+    }
+   ],
+   "x-notification": {
+    "method": "signatureNotification",
+    "result": {
+     "$ref": "#/components/schemas/WithContext_SignatureNotification"
+    }
+   }
+  },
+  {
+   "name": "signatureUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "slotSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-notification": {
+    "method": "slotNotification",
+    "result": {
+     "type": "object",
+     "properties": {
+      "slot": {
+       "type": "number"
+      },
+      "parent": {
+       "type": "number"
+      },
+      "root": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "slot",
+      "parent",
+      "root"
+     ]
+    }
+   }
+  },
+  {
+   "name": "slotUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "slotsUpdatesSubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [],
+   "result": {
+    "name": "subscription",
+    "schema": {
+     "type": "integer"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": []
+    }
+   ],
+   "x-notification": {
+    "method": "slotsUpdatesNotification",
+    "result": {
+     "type": "object",
+     "properties": {
+      "type": {
+       "type": "string"
+      },
+      "slot": {
+       "type": "number"
+      },
+      "timestamp": {
+       "type": "number"
+      },
+      "parent": {
+       "type": "number"
+      },
+      "stats": {
+       "$ref": "#/components/schemas/Record_string_number"
+      },
+      "err": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "type",
+      "slot",
+      "timestamp"
+     ]
+    }
+   }
+  },
+  {
+   "name": "slotsUpdatesUnsubscribe",
+   "tags": [
+    {
+     "name": "websocket"
+    }
+   ],
+   "servers": [
+    {
+     "name": "websocket",
+     "url": "wss://services.carbium.sh"
+    }
+   ],
+   "paramStructure": "by-position",
+   "params": [
+    {
+     "name": "subscription",
+     "required": true,
+     "schema": {
+      "type": "integer"
+     }
+    }
+   ],
+   "result": {
+    "name": "result",
+    "schema": {
+     "type": "boolean"
+    }
+   },
+   "examples": [
+    {
+     "name": "example",
+     "params": [
+      {
+       "name": "subscription",
+       "value": 1
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "components": {
+  "schemas": {
+   "AccountDataEncoding": {
+    "anyOf": [
+     {
+      "$ref": "#/components/schemas/BinaryEncoding"
+     },
+     {
+      "type": "string",
+      "const": "base64+zstd"
+     }
+    ]
+   },
+   "AccountInfo": {
+    "type": "object",
+    "properties": {
+     "lamports": {
+      "type": "number"
+     },
+     "owner": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "data": {
+      "$ref": "#/components/schemas/EncodedData"
+     },
+     "executable": {
+      "type": "boolean"
+     },
+     "rentEpoch": {
+      "type": "number"
+     },
+     "space": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "lamports",
+     "owner",
+     "data",
+     "executable",
+     "rentEpoch"
+    ]
+   },
+   "AccountInfoConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/Encoding"
+     },
+     "dataSlice": {
+      "$ref": "#/components/schemas/DataSlice"
+     }
+    }
+   },
+   "AccountKeySource": {
+    "type": "string",
+    "enum": [
+     "transaction",
+     "lookupTable"
+    ]
+   },
+   "AddressHistoryDetails": {
+    "type": "string",
+    "enum": [
+     "signatures",
+     "full"
+    ]
+   },
+   "Base58": {
+    "type": "string"
+   },
+   "Base64": {
+    "type": "string"
+   },
+   "BinaryEncoding": {
+    "type": "string",
+    "enum": [
+     "base58",
+     "base64"
+    ]
+   },
+   "Block": {
+    "type": "object",
+    "properties": {
+     "blockhash": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "previousBlockhash": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "parentSlot": {
+      "type": "number"
+     },
+     "blockHeight": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "blockTime": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "transactions": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "transaction": {
+         "$ref": "#/components/schemas/EncodedTransaction"
+        },
+        "meta": {
+         "anyOf": [
+          {
+           "$ref": "#/components/schemas/TransactionMeta"
+          },
+          {
+           "type": "null"
+          }
+         ]
+        },
+        "version": {
+         "type": [
+          "string",
+          "number"
+         ],
+         "enum": [
+          "legacy",
+          0,
+          1
+         ]
+        }
+       },
+       "required": [
+        "transaction",
+        "meta"
+       ]
+      }
+     },
+     "signatures": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     },
+     "rewards": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Reward"
+      }
+     },
+     "numRewardPartitions": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "blockhash",
+     "previousBlockhash",
+     "parentSlot",
+     "blockHeight",
+     "blockTime"
+    ]
+   },
+   "BlockCommitment": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "totalStake": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "commitment",
+     "totalStake"
+    ]
+   },
+   "BlockConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/TransactionEncoding"
+     },
+     "maxSupportedTransactionVersion": {
+      "type": "number"
+     },
+     "transactionDetails": {
+      "$ref": "#/components/schemas/TransactionDetails"
+     },
+     "rewards": {
+      "type": "boolean"
+     }
+    }
+   },
+   "BlockEncoding": {
+    "type": "string",
+    "enum": [
+     "json",
+     "base64",
+     "base58"
+    ]
+   },
+   "BlockFilter": {
+    "anyOf": [
+     {
+      "type": "string",
+      "const": "all"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "mentionsAccountOrProgram": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "mentionsAccountOrProgram"
+      ]
+     }
+    ]
+   },
+   "BlockProduction": {
+    "type": "object",
+    "properties": {
+     "byIdentity": {
+      "$ref": "#/components/schemas/Record_Base58_number_number"
+     },
+     "range": {
+      "type": "object",
+      "properties": {
+       "firstSlot": {
+        "type": "number"
+       },
+       "lastSlot": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "firstSlot",
+       "lastSlot"
+      ]
+     }
+    },
+    "required": [
+     "byIdentity",
+     "range"
+    ]
+   },
+   "BlockProductionConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "identity": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "range": {
+      "type": "object",
+      "properties": {
+       "firstSlot": {
+        "type": "number"
+       },
+       "lastSlot": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "firstSlot"
+      ]
+     }
+    }
+   },
+   "BlockSubscribeDetails": {
+    "type": "string",
+    "enum": [
+     "full",
+     "signatures",
+     "none"
+    ]
+   },
+   "ClusterNode": {
+    "type": "object",
+    "properties": {
+     "pubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "gossip": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "tpu": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "tpuQuic": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "rpc": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "pubsub": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "version": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "featureSet": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "shredVersion": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "pubkey",
+     "gossip",
+     "tpu",
+     "rpc",
+     "version",
+     "featureSet",
+     "shredVersion"
+    ]
+   },
+   "Commitment": {
+    "type": "string",
+    "enum": [
+     "processed",
+     "confirmed",
+     "finalized"
+    ]
+   },
+   "CommitmentConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     }
+    }
+   },
+   "Context": {
+    "type": "object",
+    "properties": {
+     "slot": {
+      "type": "number"
+     },
+     "apiVersion": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "slot"
+    ]
+   },
+   "DasAsset": {
+    "type": "object",
+    "properties": {
+     "interface": {
+      "type": "string"
+     },
+     "id": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "content": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "authorities": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "address": {
+         "$ref": "#/components/schemas/Base58"
+        },
+        "scopes": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "address",
+        "scopes"
+       ]
+      }
+     },
+     "compression": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "grouping": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "group_key": {
+         "type": "string"
+        },
+        "group_value": {
+         "type": "string"
+        },
+        "verified": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "group_key",
+        "group_value"
+       ]
+      }
+     },
+     "royalty": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "creators": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "address": {
+         "$ref": "#/components/schemas/Base58"
+        },
+        "share": {
+         "type": "number"
+        },
+        "verified": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "address",
+        "share",
+        "verified"
+       ]
+      }
+     },
+     "ownership": {
+      "type": "object",
+      "properties": {
+       "frozen": {
+        "type": "boolean"
+       },
+       "delegated": {
+        "type": "boolean"
+       },
+       "delegate": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/Base58"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "ownership_model": {
+        "type": "string"
+       },
+       "owner": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "frozen",
+       "delegated",
+       "delegate",
+       "ownership_model",
+       "owner"
+      ]
+     },
+     "supply": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Record_string_unknown"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "mutable": {
+      "type": "boolean"
+     },
+     "burnt": {
+      "type": "boolean"
+     },
+     "token_info": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "mint_extensions": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "plugins": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "external_plugins": {
+      "type": "array",
+      "items": {}
+     },
+     "mpl_core_info": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     },
+     "inscription": {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     }
+    },
+    "required": [
+     "interface",
+     "id",
+     "ownership",
+     "mutable",
+     "burnt"
+    ],
+    "additionalProperties": {}
+   },
+   "DasAssetList": {
+    "type": "object",
+    "properties": {
+     "total": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "page": {
+      "type": "number"
+     },
+     "cursor": {
+      "type": "string"
+     },
+     "before": {
+      "type": "string"
+     },
+     "after": {
+      "type": "string"
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/DasAsset"
+      }
+     },
+     "grand_total": {
+      "type": "number"
+     },
+     "nativeBalance": {
+      "type": "object",
+      "properties": {
+       "lamports": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "lamports"
+      ]
+     },
+     "last_indexed_slot": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "total",
+     "limit",
+     "items"
+    ]
+   },
+   "DasDisplayOptions": {
+    "type": "object",
+    "properties": {
+     "showFungible": {
+      "type": "boolean"
+     },
+     "showNativeBalance": {
+      "type": "boolean"
+     },
+     "showZeroBalance": {
+      "type": "boolean"
+     },
+     "showCollectionMetadata": {
+      "type": "boolean"
+     },
+     "showUnverifiedCollections": {
+      "type": "boolean"
+     },
+     "showGrandTotal": {
+      "type": "boolean"
+     },
+     "showInscription": {
+      "type": "boolean"
+     },
+     "showRawData": {
+      "type": "boolean"
+     },
+     "requireFullIndex": {
+      "type": "boolean"
+     },
+     "showSystemMetadata": {
+      "type": "boolean"
+     },
+     "showClosedAccounts": {
+      "type": "boolean"
+     }
+    }
+   },
+   "DasEdition": {
+    "type": "object",
+    "properties": {
+     "mint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "edition_address": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "edition": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "mint",
+     "edition_address",
+     "edition"
+    ]
+   },
+   "DasEditionList": {
+    "type": "object",
+    "properties": {
+     "total": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "page": {
+      "type": "number"
+     },
+     "master_edition_address": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "supply": {
+      "type": "number"
+     },
+     "max_supply": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "editions": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/DasEdition"
+      }
+     }
+    },
+    "required": [
+     "total",
+     "limit",
+     "page",
+     "master_edition_address",
+     "supply",
+     "max_supply",
+     "editions"
+    ]
+   },
+   "DasGrouping": {
+    "anyOf": [
+     {
+      "type": "array",
+      "minItems": 2,
+      "items": [
+       {
+        "type": "string",
+        "title": "key"
+       },
+       {
+        "type": "string",
+        "title": "value"
+       }
+      ],
+      "maxItems": 2
+     },
+     {
+      "type": "object",
+      "properties": {
+       "collection": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "collection"
+      ]
+     },
+     {
+      "type": "object",
+      "properties": {
+       "group_key": {
+        "type": "string"
+       },
+       "group_value": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "group_key",
+       "group_value"
+      ]
+     }
+    ]
+   },
+   "DasSort": {
+    "type": "object",
+    "properties": {
+     "sortBy": {
+      "$ref": "#/components/schemas/DasSortBy"
+     },
+     "sortDirection": {
+      "$ref": "#/components/schemas/SortOrder"
+     }
+    },
+    "required": [
+     "sortBy"
+    ]
+   },
+   "DasSortBy": {
+    "type": "string",
+    "enum": [
+     "id",
+     "created",
+     "updated",
+     "recent_action",
+     "none"
+    ]
+   },
+   "DasTokenAccount": {
+    "type": "object",
+    "properties": {
+     "address": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "mint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "owner": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "amount": {
+      "type": "number"
+     },
+     "delegated_amount": {
+      "type": "number"
+     },
+     "frozen": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "address",
+     "mint",
+     "owner",
+     "amount",
+     "delegated_amount",
+     "frozen"
+    ],
+    "additionalProperties": {}
+   },
+   "DasTokenAccountList": {
+    "type": "object",
+    "properties": {
+     "total": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "page": {
+      "type": "number"
+     },
+     "cursor": {
+      "type": "string"
+     },
+     "token_accounts": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/DasTokenAccount"
+      }
+     },
+     "last_indexed_slot": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "total",
+     "limit",
+     "token_accounts"
+    ]
+   },
+   "DasTokenType": {
+    "type": "string",
+    "enum": [
+     "fungible",
+     "nonFungible",
+     "regularNft",
+     "compressedNft",
+     "all"
+    ]
+   },
+   "DataSlice": {
+    "type": "object",
+    "properties": {
+     "offset": {
+      "type": "number"
+     },
+     "length": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "offset",
+     "length"
+    ]
+   },
+   "EncodedData": {
+    "anyOf": [
+     {
+      "type": "array",
+      "minItems": 2,
+      "items": [
+       {
+        "type": "string",
+        "title": "data"
+       },
+       {
+        "$ref": "#/components/schemas/AccountDataEncoding",
+        "title": "encoding"
+       }
+      ],
+      "maxItems": 2
+     },
+     {
+      "$ref": "#/components/schemas/ParsedData"
+     },
+     {
+      "type": "string"
+     }
+    ]
+   },
+   "EncodedTransaction": {
+    "anyOf": [
+     {
+      "type": "array",
+      "minItems": 2,
+      "items": [
+       {
+        "type": "string",
+        "title": "data"
+       },
+       {
+        "$ref": "#/components/schemas/BinaryEncoding",
+        "title": "encoding"
+       }
+      ],
+      "maxItems": 2
+     },
+     {
+      "type": "object",
+      "properties": {
+       "signatures": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/Base58"
+        }
+       },
+       "message": {
+        "$ref": "#/components/schemas/Record_string_unknown"
+       }
+      },
+      "required": [
+       "signatures",
+       "message"
+      ]
+     },
+     {
+      "type": "object",
+      "properties": {
+       "signatures": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/Base58"
+        }
+       },
+       "accountKeys": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/TransactionAccountKey"
+        }
+       }
+      },
+      "required": [
+       "signatures",
+       "accountKeys"
+      ]
+     }
+    ]
+   },
+   "Encoding": {
+    "type": "string",
+    "enum": [
+     "base58",
+     "base64",
+     "base64+zstd",
+     "jsonParsed"
+    ]
+   },
+   "EpochInfo": {
+    "type": "object",
+    "properties": {
+     "absoluteSlot": {
+      "type": "number"
+     },
+     "blockHeight": {
+      "type": "number"
+     },
+     "epoch": {
+      "type": "number"
+     },
+     "slotIndex": {
+      "type": "number"
+     },
+     "slotsInEpoch": {
+      "type": "number"
+     },
+     "transactionCount": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "absoluteSlot",
+     "blockHeight",
+     "epoch",
+     "slotIndex",
+     "slotsInEpoch",
+     "transactionCount"
+    ]
+   },
+   "EpochSchedule": {
+    "type": "object",
+    "properties": {
+     "slotsPerEpoch": {
+      "type": "number"
+     },
+     "leaderScheduleSlotOffset": {
+      "type": "number"
+     },
+     "warmup": {
+      "type": "boolean"
+     },
+     "firstNormalEpoch": {
+      "type": "number"
+     },
+     "firstNormalSlot": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "slotsPerEpoch",
+     "leaderScheduleSlotOffset",
+     "warmup",
+     "firstNormalEpoch",
+     "firstNormalSlot"
+    ]
+   },
+   "HighestSnapshotSlot": {
+    "type": "object",
+    "properties": {
+     "full": {
+      "type": "number"
+     },
+     "incremental": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "full",
+     "incremental"
+    ]
+   },
+   "HistoryStatusFilter": {
+    "type": "string",
+    "enum": [
+     "succeeded",
+     "failed",
+     "any"
+    ]
+   },
+   "HistoryTokenAccounts": {
+    "type": "string",
+    "enum": [
+     "none",
+     "balanceChanged",
+     "all"
+    ]
+   },
+   "InflationGovernor": {
+    "type": "object",
+    "properties": {
+     "initial": {
+      "type": "number"
+     },
+     "terminal": {
+      "type": "number"
+     },
+     "taper": {
+      "type": "number"
+     },
+     "foundation": {
+      "type": "number"
+     },
+     "foundationTerm": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "initial",
+     "terminal",
+     "taper",
+     "foundation",
+     "foundationTerm"
+    ]
+   },
+   "InflationRate": {
+    "type": "object",
+    "properties": {
+     "total": {
+      "type": "number"
+     },
+     "validator": {
+      "type": "number"
+     },
+     "foundation": {
+      "type": "number"
+     },
+     "epoch": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "total",
+     "validator",
+     "foundation",
+     "epoch"
+    ]
+   },
+   "InflationReward": {
+    "type": "object",
+    "properties": {
+     "epoch": {
+      "type": "number"
+     },
+     "effectiveSlot": {
+      "type": "number"
+     },
+     "amount": {
+      "type": "number"
+     },
+     "postBalance": {
+      "type": "number"
+     },
+     "commission": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "epoch",
+     "effectiveSlot",
+     "amount",
+     "postBalance"
+    ]
+   },
+   "InnerInstructions": {
+    "type": "object",
+    "properties": {
+     "index": {
+      "type": "number"
+     },
+     "instructions": {
+      "type": "array",
+      "items": {}
+     }
+    },
+    "required": [
+     "index",
+     "instructions"
+    ]
+   },
+   "KeyedAccount": {
+    "type": "object",
+    "properties": {
+     "pubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "account": {
+      "$ref": "#/components/schemas/AccountInfo"
+     }
+    },
+    "required": [
+     "pubkey",
+     "account"
+    ]
+   },
+   "LargestAccount": {
+    "type": "object",
+    "properties": {
+     "address": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "lamports": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "address",
+     "lamports"
+    ]
+   },
+   "LatestBlockhash": {
+    "type": "object",
+    "properties": {
+     "blockhash": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "lastValidBlockHeight": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "blockhash",
+     "lastValidBlockHeight"
+    ]
+   },
+   "LeaderSchedule": {
+    "anyOf": [
+     {
+      "$ref": "#/components/schemas/Record_Base58_number_array"
+     },
+     {
+      "type": "null"
+     }
+    ]
+   },
+   "LeaderScheduleConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "identity": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    }
+   },
+   "LoadedAddresses": {
+    "type": "object",
+    "properties": {
+     "writable": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     },
+     "readonly": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    "required": [
+     "writable",
+     "readonly"
+    ]
+   },
+   "LogsFilter": {
+    "anyOf": [
+     {
+      "type": "string",
+      "const": "all"
+     },
+     {
+      "type": "string",
+      "const": "allWithVotes"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "mentions": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/Base58"
+        },
+        "minItems": 1,
+        "maxItems": 1
+       }
+      },
+      "required": [
+       "mentions"
+      ]
+     }
+    ]
+   },
+   "MemcmpEncoding": {
+    "anyOf": [
+     {
+      "$ref": "#/components/schemas/BinaryEncoding"
+     },
+     {
+      "type": "string",
+      "const": "bytes"
+     }
+    ]
+   },
+   "ParsedData": {
+    "type": "object",
+    "properties": {
+     "program": {
+      "type": "string"
+     },
+     "parsed": {},
+     "space": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "program",
+     "parsed",
+     "space"
+    ]
+   },
+   "PerformanceSample": {
+    "type": "object",
+    "properties": {
+     "slot": {
+      "type": "number"
+     },
+     "numTransactions": {
+      "type": "number"
+     },
+     "numNonVoteTransactions": {
+      "type": "number"
+     },
+     "numSlots": {
+      "type": "number"
+     },
+     "samplePeriodSecs": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "slot",
+     "numTransactions",
+     "numSlots",
+     "samplePeriodSecs"
+    ]
+   },
+   "Prices": {
+    "type": "object",
+    "properties": {
+     "solUsd": {
+      "type": "number"
+     },
+     "builtUnix": {
+      "type": "number"
+     },
+     "priced": {
+      "type": "number"
+     },
+     "stale": {
+      "type": "number"
+     },
+     "noroute": {
+      "type": "number"
+     },
+     "total": {
+      "type": "number"
+     },
+     "rows": {
+      "type": "array",
+      "items": {
+       "type": "array",
+       "minItems": 4,
+       "items": [
+        {
+         "$ref": "#/components/schemas/Base58",
+         "title": "mint"
+        },
+        {
+         "type": [
+          "number",
+          "null"
+         ],
+         "title": "priceUsd"
+        },
+        {
+         "type": "number",
+         "title": "tvlUsd"
+        },
+        {
+         "$ref": "#/components/schemas/Base58",
+         "title": "quoteMint"
+        }
+       ],
+       "maxItems": 4
+      }
+     }
+    },
+    "required": [
+     "solUsd",
+     "builtUnix",
+     "priced",
+     "stale",
+     "noroute",
+     "total",
+     "rows"
+    ]
+   },
+   "PricesParams": {
+    "type": "object",
+    "properties": {
+     "mints": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    }
+   },
+   "PrioritizationFee": {
+    "type": "object",
+    "properties": {
+     "slot": {
+      "type": "number"
+     },
+     "prioritizationFee": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "slot",
+     "prioritizationFee"
+    ]
+   },
+   "PriorityFeeEstimate": {
+    "type": "object",
+    "properties": {
+     "priorityFeeEstimate": {
+      "type": "number"
+     },
+     "priorityFeeLevels": {
+      "type": "object",
+      "properties": {
+       "min": {
+        "type": "number"
+       },
+       "low": {
+        "type": "number"
+       },
+       "medium": {
+        "type": "number"
+       },
+       "high": {
+        "type": "number"
+       },
+       "veryHigh": {
+        "type": "number"
+       },
+       "unsafeMax": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "min",
+       "low",
+       "medium",
+       "high",
+       "veryHigh",
+       "unsafeMax"
+      ]
+     }
+    }
+   },
+   "PriorityFeeEstimateParams": {
+    "type": "object",
+    "properties": {
+     "accountKeys": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     },
+     "transaction": {
+      "type": "string"
+     },
+     "options": {
+      "type": "object",
+      "properties": {
+       "priorityLevel": {
+        "$ref": "#/components/schemas/PriorityLevel"
+       },
+       "includeAllPriorityFeeLevels": {
+        "type": "boolean"
+       },
+       "recommended": {
+        "type": "boolean"
+       },
+       "lookbackSlots": {
+        "type": "number"
+       },
+       "transactionEncoding": {
+        "$ref": "#/components/schemas/BinaryEncoding"
+       }
+      }
+     }
+    }
+   },
+   "PriorityLevel": {
+    "type": "string",
+    "enum": [
+     "Min",
+     "Low",
+     "Medium",
+     "High",
+     "VeryHigh",
+     "UnsafeMax"
+    ]
+   },
+   "ProgramAccountsConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/Encoding"
+     },
+     "dataSlice": {
+      "$ref": "#/components/schemas/DataSlice"
+     },
+     "filters": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/ProgramAccountsFilter"
+      }
+     },
+     "withContext": {
+      "type": "boolean"
+     }
+    }
+   },
+   "ProgramAccountsFilter": {
+    "type": "object",
+    "properties": {
+     "memcmp": {
+      "type": "object",
+      "properties": {
+       "offset": {
+        "type": "number"
+       },
+       "bytes": {
+        "type": "string"
+       },
+       "encoding": {
+        "$ref": "#/components/schemas/BinaryEncoding"
+       }
+      },
+      "required": [
+       "offset",
+       "bytes"
+      ]
+     },
+     "dataSize": {
+      "type": "number"
+     }
+    }
+   },
+   "ProgramSubscribeFilter": {
+    "anyOf": [
+     {
+      "type": "object",
+      "properties": {
+       "dataSize": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "dataSize"
+      ]
+     },
+     {
+      "type": "object",
+      "properties": {
+       "memcmp": {
+        "type": "object",
+        "properties": {
+         "offset": {
+          "type": "number"
+         },
+         "bytes": {
+          "type": "string"
+         },
+         "encoding": {
+          "$ref": "#/components/schemas/MemcmpEncoding"
+         }
+        },
+        "required": [
+         "offset",
+         "bytes"
+        ]
+       }
+      },
+      "required": [
+       "memcmp"
+      ]
+     }
+    ]
+   },
+   "QnPriorityFeeLevels": {
+    "type": "object",
+    "properties": {
+     "extreme": {
+      "type": "number"
+     },
+     "high": {
+      "type": "number"
+     },
+     "medium": {
+      "type": "number"
+     },
+     "low": {
+      "type": "number"
+     },
+     "percentiles": {
+      "$ref": "#/components/schemas/Record_string_number"
+     }
+    },
+    "required": [
+     "extreme",
+     "high",
+     "medium",
+     "low",
+     "percentiles"
+    ]
+   },
+   "QnPriorityFees": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "type": "object",
+      "properties": {
+       "slot": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "slot"
+      ]
+     },
+     "per_compute_unit": {
+      "$ref": "#/components/schemas/QnPriorityFeeLevels"
+     },
+     "per_transaction": {
+      "$ref": "#/components/schemas/QnPriorityFeeLevels"
+     },
+     "recommended": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "context",
+     "per_compute_unit",
+     "per_transaction",
+     "recommended"
+    ]
+   },
+   "QnPriorityFeesParams": {
+    "type": "object",
+    "properties": {
+     "last_n_blocks": {
+      "type": "number"
+     },
+     "account": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "api_version": {
+      "type": "number"
+     }
+    }
+   },
+   "Quote": {
+    "type": "object",
+    "properties": {
+     "srcAmountIn": {
+      "type": "string"
+     },
+     "destAmountOut": {
+      "type": "string"
+     },
+     "minAmountOut": {
+      "type": "string"
+     },
+     "slippageBps": {
+      "type": "number"
+     },
+     "swapMode": {
+      "type": "string",
+      "const": "BaseIn"
+     },
+     "inputMint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "outputMint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "routePlan": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/RouteLeg"
+      }
+     },
+     "quoteId": {
+      "type": "string"
+     },
+     "platformFee": {
+      "type": "object",
+      "properties": {
+       "amount": {
+        "type": "string"
+       },
+       "feeBps": {
+        "type": "number"
+       },
+       "mint": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "amount",
+       "feeBps",
+       "mint"
+      ]
+     },
+     "txVersion": {
+      "type": "number",
+      "const": 1
+     },
+     "swapTag": {
+      "type": "number",
+      "const": 1
+     },
+     "partial": {
+      "type": "boolean",
+      "const": true
+     },
+     "requestedAmountIn": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "srcAmountIn",
+     "destAmountOut",
+     "minAmountOut",
+     "slippageBps",
+     "swapMode",
+     "inputMint",
+     "outputMint",
+     "routePlan",
+     "quoteId"
+    ],
+    "additionalProperties": {}
+   },
+   "QuoteHealth": {
+    "type": "object",
+    "properties": {
+     "ok": {
+      "type": "boolean"
+     },
+     "quoteUpstream": {},
+     "canBuild": {
+      "type": "boolean"
+     },
+     "families": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "poolStore": {},
+     "chainRpc": {},
+     "priced": {
+      "type": "number"
+     },
+     "total": {
+      "type": "number"
+     },
+     "stale": {
+      "type": "number"
+     },
+     "tableAgeSecs": {
+      "type": "number"
+     },
+     "quote_refusal_ratio": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "ok",
+     "quoteUpstream",
+     "canBuild",
+     "families",
+     "poolStore",
+     "chainRpc",
+     "priced",
+     "total",
+     "stale",
+     "tableAgeSecs",
+     "quote_refusal_ratio"
+    ],
+    "additionalProperties": {}
+   },
+   "QuoteParams": {
+    "type": "object",
+    "properties": {
+     "src_mint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "dst_mint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "amount_in": {
+      "type": [
+       "number",
+       "string"
+      ]
+     },
+     "slippage_bps": {
+      "type": "number"
+     },
+     "dex": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      ]
+     },
+     "dexes": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      ]
+     },
+     "txVersion": {
+      "type": "number",
+      "enum": [
+       0,
+       1
+      ]
+     },
+     "swapTag": {
+      "type": "number",
+      "enum": [
+       0,
+       1
+      ]
+     }
+    },
+    "required": [
+     "src_mint",
+     "dst_mint",
+     "amount_in",
+     "slippage_bps"
+    ]
+   },
+   "Record_Base58_number_array": {
+    "type": "object",
+    "additionalProperties": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   },
+   "Record_Base58_number_number": {
+    "type": "object",
+    "additionalProperties": {
+     "type": "array",
+     "minItems": 2,
+     "items": [
+      {
+       "type": "number",
+       "title": "leaderSlots"
+      },
+      {
+       "type": "number",
+       "title": "blocksProduced"
+      }
+     ],
+     "maxItems": 2
+    }
+   },
+   "Record_string_number": {
+    "type": "object",
+    "additionalProperties": {
+     "type": "number"
+    }
+   },
+   "Record_string_unknown": {
+    "type": "object",
+    "additionalProperties": {}
+   },
+   "Reward": {
+    "type": "object",
+    "properties": {
+     "pubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "lamports": {
+      "type": "number"
+     },
+     "postBalance": {
+      "type": "number"
+     },
+     "rewardType": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "commission": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "pubkey",
+     "lamports",
+     "postBalance",
+     "rewardType"
+    ]
+   },
+   "RouteLeg": {
+    "type": "object",
+    "properties": {
+     "hop": {
+      "type": "number"
+     },
+     "percent": {
+      "type": "string"
+     },
+     "swapInfo": {
+      "type": "object",
+      "properties": {
+       "ammKey": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "label": {
+        "type": "string"
+       },
+       "inputMint": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "outputMint": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "inAmount": {
+        "type": "string"
+       },
+       "outAmount": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "ammKey",
+       "label",
+       "inputMint",
+       "outputMint",
+       "inAmount",
+       "outAmount"
+      ]
+     }
+    },
+    "required": [
+     "hop",
+     "percent",
+     "swapInfo"
+    ]
+   },
+   "SearchAssetsParams": {
+    "type": "object",
+    "properties": {
+     "page": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "cursor": {
+      "type": "string"
+     },
+     "before": {
+      "type": "string"
+     },
+     "after": {
+      "type": "string"
+     },
+     "sortBy": {
+      "$ref": "#/components/schemas/DasSort"
+     },
+     "options": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     },
+     "displayOptions": {
+      "$ref": "#/components/schemas/DasDisplayOptions"
+     },
+     "ownerAddress": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "creatorAddress": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "creatorVerified": {
+      "type": "boolean"
+     },
+     "authorityAddress": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "grouping": {
+      "$ref": "#/components/schemas/DasGrouping"
+     },
+     "interface": {
+      "type": "string"
+     },
+     "tokenType": {
+      "$ref": "#/components/schemas/DasTokenType"
+     },
+     "frozen": {
+      "type": "boolean"
+     },
+     "delegate": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "burnt": {
+      "type": "boolean"
+     },
+     "compressed": {
+      "type": "boolean"
+     },
+     "negate": {
+      "type": "boolean",
+      "const": false
+     },
+     "conditionType": {
+      "type": "string",
+      "const": "all"
+     }
+    }
+   },
+   "SendTransactionConfig": {
+    "type": "object",
+    "properties": {
+     "encoding": {
+      "$ref": "#/components/schemas/BinaryEncoding"
+     },
+     "skipPreflight": {
+      "type": "boolean"
+     },
+     "preflightCommitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "maxRetries": {
+      "type": "number"
+     },
+     "minContextSlot": {
+      "type": "number"
+     }
+    }
+   },
+   "SettledCommitment": {
+    "type": "string",
+    "enum": [
+     "confirmed",
+     "finalized"
+    ]
+   },
+   "SignatureInfo": {
+    "type": "object",
+    "properties": {
+     "signature": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "slot": {
+      "type": "number"
+     },
+     "err": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TransactionError"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "memo": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "blockTime": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "confirmationStatus": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "required": [
+     "signature",
+     "slot",
+     "err",
+     "memo",
+     "blockTime"
+    ]
+   },
+   "SignaturesForAddressConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "before": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "until": {
+      "$ref": "#/components/schemas/Base58"
+     }
+    }
+   },
+   "SignatureStatus": {
+    "type": "object",
+    "properties": {
+     "slot": {
+      "type": "number"
+     },
+     "confirmations": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "err": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TransactionError"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "confirmationStatus": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Commitment"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "Ok": {
+          "type": "null"
+         }
+        },
+        "required": [
+         "Ok"
+        ]
+       },
+       {
+        "type": "object",
+        "properties": {
+         "Err": {
+          "$ref": "#/components/schemas/TransactionError"
+         }
+        },
+        "required": [
+         "Err"
+        ]
+       }
+      ]
+     }
+    },
+    "required": [
+     "slot",
+     "confirmations",
+     "err",
+     "confirmationStatus"
+    ]
+   },
+   "SimulateTransactionConfig": {
+    "type": "object",
+    "properties": {
+     "sigVerify": {
+      "type": "boolean"
+     },
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/BinaryEncoding"
+     },
+     "replaceRecentBlockhash": {
+      "type": "boolean"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "innerInstructions": {
+      "type": "boolean"
+     },
+     "accounts": {
+      "type": "object",
+      "properties": {
+       "addresses": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/Base58"
+        }
+       },
+       "encoding": {
+        "$ref": "#/components/schemas/Encoding"
+       }
+      },
+      "required": [
+       "addresses"
+      ]
+     }
+    }
+   },
+   "SimulateTransactionResult": {
+    "type": "object",
+    "properties": {
+     "err": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TransactionError"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "logs": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "accounts": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/components/schemas/AccountInfo"
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "unitsConsumed": {
+      "type": "number"
+     },
+     "returnData": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "programId": {
+          "$ref": "#/components/schemas/Base58"
+         },
+         "data": {
+          "type": "array",
+          "minItems": 2,
+          "items": [
+           {
+            "$ref": "#/components/schemas/Base64"
+           },
+           {
+            "type": "string",
+            "const": "base64"
+           }
+          ],
+          "maxItems": 2
+         }
+        },
+        "required": [
+         "programId",
+         "data"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "innerInstructions": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/InnerInstructions"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "replacementBlockhash": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "blockhash": {
+          "$ref": "#/components/schemas/Base58"
+         },
+         "lastValidBlockHeight": {
+          "type": "number"
+         }
+        },
+        "required": [
+         "blockhash",
+         "lastValidBlockHeight"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "required": [
+     "err",
+     "logs"
+    ]
+   },
+   "SlotRange": {
+    "type": "object",
+    "properties": {
+     "gte": {
+      "type": "number"
+     },
+     "gt": {
+      "type": "number"
+     },
+     "lte": {
+      "type": "number"
+     },
+     "lt": {
+      "type": "number"
+     },
+     "eq": {
+      "type": "number"
+     }
+    }
+   },
+   "SortOrder": {
+    "type": "string",
+    "enum": [
+     "asc",
+     "desc"
+    ]
+   },
+   "Supply": {
+    "type": "object",
+    "properties": {
+     "total": {
+      "type": "number"
+     },
+     "circulating": {
+      "type": "number"
+     },
+     "nonCirculating": {
+      "type": "number"
+     },
+     "nonCirculatingAccounts": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Base58"
+      }
+     }
+    },
+    "required": [
+     "total",
+     "circulating",
+     "nonCirculating",
+     "nonCirculatingAccounts"
+    ]
+   },
+   "Swap": {
+    "type": "object",
+    "properties": {
+     "transaction": {
+      "$ref": "#/components/schemas/Base64"
+     },
+     "blockhash": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "lastValidBlockHeight": {
+      "type": "number"
+     },
+     "minAmountOut": {
+      "type": "string"
+     },
+     "computeUnitLimit": {
+      "type": "number"
+     },
+     "priorityFeeLamports": {
+      "type": "string"
+     },
+     "rentLamports": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "ataCreates": {
+      "type": "number"
+     },
+     "txVersion": {
+      "type": "number",
+      "const": 1
+     },
+     "swapTag": {
+      "type": "number",
+      "const": 1
+     },
+     "routeRerouted": {
+      "type": "object",
+      "properties": {
+       "why": {
+        "type": "string"
+       },
+       "deadPool": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "quotedOut": {
+        "type": "string"
+       },
+       "reroutedOut": {
+        "type": "string"
+       },
+       "floor": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "why",
+       "quotedOut",
+       "reroutedOut",
+       "floor"
+      ]
+     }
+    },
+    "required": [
+     "transaction",
+     "blockhash",
+     "lastValidBlockHeight",
+     "minAmountOut",
+     "computeUnitLimit",
+     "priorityFeeLamports",
+     "rentLamports",
+     "ataCreates"
+    ],
+    "additionalProperties": {}
+   },
+   "SwapParams": {
+    "type": "object",
+    "properties": {
+     "quote_id": {
+      "type": "string"
+     },
+     "user_pubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "compute_unit_price_micro_lamports": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "quote_id",
+     "user_pubkey"
+    ]
+   },
+   "TokenAccountsFilter": {
+    "anyOf": [
+     {
+      "type": "object",
+      "properties": {
+       "mint": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "mint"
+      ]
+     },
+     {
+      "type": "object",
+      "properties": {
+       "programId": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "programId"
+      ]
+     }
+    ]
+   },
+   "TokenAmount": {
+    "type": "object",
+    "properties": {
+     "amount": {
+      "type": "string"
+     },
+     "decimals": {
+      "type": "number"
+     },
+     "uiAmount": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "uiAmountString": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "amount",
+     "decimals",
+     "uiAmount",
+     "uiAmountString"
+    ]
+   },
+   "TokenBalance": {
+    "type": "object",
+    "properties": {
+     "accountIndex": {
+      "type": "number"
+     },
+     "mint": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "owner": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "programId": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "uiTokenAmount": {
+      "$ref": "#/components/schemas/TokenAmount"
+     }
+    },
+    "required": [
+     "accountIndex",
+     "mint",
+     "uiTokenAmount"
+    ]
+   },
+   "TransactionAccountKey": {
+    "type": "object",
+    "properties": {
+     "pubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "signer": {
+      "type": "boolean"
+     },
+     "writable": {
+      "type": "boolean"
+     },
+     "source": {
+      "$ref": "#/components/schemas/AccountKeySource"
+     }
+    },
+    "required": [
+     "pubkey",
+     "signer",
+     "writable",
+     "source"
+    ]
+   },
+   "TransactionConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/TransactionEncoding"
+     },
+     "maxSupportedTransactionVersion": {
+      "type": "number"
+     }
+    }
+   },
+   "TransactionDetails": {
+    "type": "string",
+    "enum": [
+     "full",
+     "accounts",
+     "signatures",
+     "none"
+    ]
+   },
+   "TransactionEncoding": {
+    "type": "string",
+    "enum": [
+     "json",
+     "jsonParsed",
+     "base58",
+     "base64"
+    ]
+   },
+   "TransactionError": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "$ref": "#/components/schemas/Record_string_unknown"
+     }
+    ]
+   },
+   "TransactionMeta": {
+    "type": "object",
+    "properties": {
+     "err": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TransactionError"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "fee": {
+      "type": "number"
+     },
+     "preBalances": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "postBalances": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "innerInstructions": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/InnerInstructions"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "preTokenBalances": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/TokenBalance"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "postTokenBalances": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/TokenBalance"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "logMessages": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "loadedAddresses": {
+      "$ref": "#/components/schemas/LoadedAddresses"
+     },
+     "returnData": {
+      "type": "object",
+      "properties": {
+       "programId": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "data": {
+        "type": "array",
+        "minItems": 2,
+        "items": [
+         {
+          "$ref": "#/components/schemas/Base64"
+         },
+         {
+          "type": "string",
+          "const": "base64"
+         }
+        ],
+        "maxItems": 2
+       }
+      },
+      "required": [
+       "programId",
+       "data"
+      ]
+     },
+     "computeUnitsConsumed": {
+      "type": "number"
+     },
+     "costUnits": {
+      "type": "number"
+     },
+     "rewards": {
+      "anyOf": [
+       {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/Reward"
+        }
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "Ok": {
+          "type": "null"
+         }
+        },
+        "required": [
+         "Ok"
+        ]
+       },
+       {
+        "type": "object",
+        "properties": {
+         "Err": {
+          "$ref": "#/components/schemas/TransactionError"
+         }
+        },
+        "required": [
+         "Err"
+        ]
+       }
+      ]
+     }
+    },
+    "required": [
+     "err",
+     "fee",
+     "preBalances",
+     "postBalances"
+    ]
+   },
+   "TransactionsForAddress": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "items": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/SignatureInfo"
+        },
+        {
+         "type": "object",
+         "properties": {
+          "transactionIndex": {
+           "type": "number"
+          },
+          "slot": {
+           "type": "number"
+          },
+          "transaction": {
+           "$ref": "#/components/schemas/EncodedTransaction"
+          },
+          "meta": {
+           "anyOf": [
+            {
+             "$ref": "#/components/schemas/TransactionMeta"
+            },
+            {
+             "type": "null"
+            }
+           ]
+          },
+          "blockTime": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "version": {
+           "type": [
+            "string",
+            "number"
+           ],
+           "enum": [
+            "legacy",
+            0,
+            1
+           ]
+          }
+         },
+         "required": [
+          "meta",
+          "slot",
+          "transaction",
+          "transactionIndex"
+         ]
+        }
+       ]
+      }
+     },
+     "paginationToken": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "historyFloor": {
+      "type": "number"
+     },
+     "droppedRows": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "data",
+     "paginationToken"
+    ]
+   },
+   "TransactionsForAddressConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "minContextSlot": {
+      "type": "number"
+     },
+     "encoding": {
+      "$ref": "#/components/schemas/TransactionEncoding"
+     },
+     "maxSupportedTransactionVersion": {
+      "type": "number"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "transactionDetails": {
+      "$ref": "#/components/schemas/AddressHistoryDetails"
+     },
+     "sortOrder": {
+      "$ref": "#/components/schemas/SortOrder"
+     },
+     "paginationToken": {
+      "type": "string"
+     },
+     "filters": {
+      "type": "object",
+      "properties": {
+       "slot": {
+        "$ref": "#/components/schemas/SlotRange"
+       },
+       "blockTime": {
+        "$ref": "#/components/schemas/SlotRange"
+       },
+       "status": {
+        "$ref": "#/components/schemas/HistoryStatusFilter"
+       },
+       "tokenAccounts": {
+        "$ref": "#/components/schemas/HistoryTokenAccounts"
+       },
+       "tokenTransfer": {
+        "type": "object",
+        "properties": {
+         "with": {
+          "$ref": "#/components/schemas/Base58"
+         },
+         "mint": {
+          "$ref": "#/components/schemas/Base58"
+         },
+         "direction": {
+          "$ref": "#/components/schemas/TransferDirection"
+         },
+         "amount": {
+          "$ref": "#/components/schemas/SlotRange"
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   "TransactionWithMeta": {
+    "type": "object",
+    "properties": {
+     "slot": {
+      "type": "number"
+     },
+     "transaction": {
+      "$ref": "#/components/schemas/EncodedTransaction"
+     },
+     "meta": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TransactionMeta"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "blockTime": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "version": {
+      "type": [
+       "string",
+       "number"
+      ],
+      "enum": [
+       "legacy",
+       0,
+       1
+      ]
+     }
+    },
+    "required": [
+     "slot",
+     "transaction",
+     "meta"
+    ]
+   },
+   "TransferDirection": {
+    "type": "string",
+    "enum": [
+     "in",
+     "out",
+     "any"
+    ]
+   },
+   "Version": {
+    "type": "object",
+    "properties": {
+     "solana-core": {
+      "type": "string"
+     },
+     "feature-set": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "solana-core"
+    ]
+   },
+   "VoteAccount": {
+    "type": "object",
+    "properties": {
+     "votePubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "nodePubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "activatedStake": {
+      "type": "number"
+     },
+     "epochVoteAccount": {
+      "type": "boolean"
+     },
+     "commission": {
+      "type": "number"
+     },
+     "lastVote": {
+      "type": "number"
+     },
+     "epochCredits": {
+      "type": "array",
+      "items": {
+       "type": "array",
+       "minItems": 3,
+       "items": [
+        {
+         "type": "number",
+         "title": "epoch"
+        },
+        {
+         "type": "number",
+         "title": "credits"
+        },
+        {
+         "type": "number",
+         "title": "previousCredits"
+        }
+       ],
+       "maxItems": 3
+      }
+     },
+     "rootSlot": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "votePubkey",
+     "nodePubkey",
+     "activatedStake",
+     "epochVoteAccount",
+     "commission",
+     "lastVote",
+     "epochCredits",
+     "rootSlot"
+    ]
+   },
+   "VoteAccounts": {
+    "type": "object",
+    "properties": {
+     "current": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/VoteAccount"
+      }
+     },
+     "delinquent": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/VoteAccount"
+      }
+     }
+    },
+    "required": [
+     "current",
+     "delinquent"
+    ]
+   },
+   "VoteAccountsConfig": {
+    "type": "object",
+    "properties": {
+     "commitment": {
+      "$ref": "#/components/schemas/Commitment"
+     },
+     "votePubkey": {
+      "$ref": "#/components/schemas/Base58"
+     },
+     "keepUnstakedDelinquents": {
+      "type": "boolean"
+     },
+     "delinquentSlotDistance": {
+      "type": "number"
+     }
+    }
+   },
+   "WithContext_AccountInfo": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/AccountInfo"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_AccountInfo_null": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/AccountInfo"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_AccountInfo_null_array": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "array",
+      "items": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/AccountInfo"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      }
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_BlockNotification": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "object",
+      "properties": {
+       "slot": {
+        "type": "number"
+       },
+       "err": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/TransactionError"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "block": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/Block"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      },
+      "required": [
+       "slot",
+       "err",
+       "block"
+      ]
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_BlockProduction": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/BlockProduction"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_boolean": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_KeyedAccount": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/KeyedAccount"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_KeyedAccount_array": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/KeyedAccount"
+      }
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_LargestAccount_array": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/LargestAccount"
+      }
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_LatestBlockhash": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/LatestBlockhash"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_LogsNotification": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "object",
+      "properties": {
+       "signature": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "err": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/TransactionError"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "logs": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      },
+      "required": [
+       "signature",
+       "err",
+       "logs"
+      ]
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_number": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_number_null": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_SignatureNotification": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "object",
+      "properties": {
+       "err": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/TransactionError"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      },
+      "required": [
+       "err"
+      ]
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_SignatureStatus_null_array": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "type": "array",
+      "items": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/SignatureStatus"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      }
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_SimulateTransactionResult": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/SimulateTransactionResult"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_Supply": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/Supply"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   },
+   "WithContext_TokenAmount": {
+    "type": "object",
+    "properties": {
+     "context": {
+      "$ref": "#/components/schemas/Context"
+     },
+     "value": {
+      "$ref": "#/components/schemas/TokenAmount"
+     }
+    },
+    "required": [
+     "context",
+     "value"
+    ]
+   }
+  }
+ }
+}

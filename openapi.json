@@ -1,0 +1,1361 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "carbium account API",
+  "version": "1",
+  "description": "Manage a carbium account by API with an account API key (c_acct_...): service keys and their policies, webhooks, usage and telemetry. A key cannot buy, upgrade or cancel anything. Docs: /docs#account-api-keys"
+ },
+ "servers": [
+  {
+   "url": "/"
+  }
+ ],
+ "components": {
+  "securitySchemes": {
+   "accountApiKey": {
+    "type": "http",
+    "scheme": "bearer",
+    "description": "Authorization: Bearer c_acct_... (made on the Account page; shown once)"
+   },
+   "session": {
+    "type": "http",
+    "scheme": "bearer",
+    "description": "Authorization: Bearer <dashboard session token>"
+   }
+  }
+ },
+ "paths": {
+  "/v1/keys": {
+   "get": {
+    "operationId": "get_v1_keys",
+    "summary": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:read",
+    "responses": {
+     "200": {
+      "description": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   },
+   "post": {
+    "operationId": "post_v1_keys",
+    "summary": "{key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module",
+    "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc and quote (rpc, ws and grpc when left out; quote needs the Quote module).",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "name": "indexer",
+        "scope": [
+         "rpc",
+         "ws"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/rotate": {
+   "post": {
+    "operationId": "post_v1_keys_id_rotate",
+    "summary": "{prefix, raw_key}: a new value for the same key, mailed like a new key's; the old one is refused at once",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{prefix, raw_key}: a new value for the same key, mailed like a new key's; the old one is refused at once"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/keys/{id}/revoke": {
+   "post": {
+    "operationId": "post_v1_keys_id_revoke",
+    "summary": "{applied}: true the first time, false on a repeat; every door refuses the key at once, and the first revoke mails a notice",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{applied}: true the first time, false on a repeat; every door refuses the key at once, and the first revoke mails a notice"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/keys/{id}": {
+   "delete": {
+    "operationId": "delete_v1_keys_id",
+    "summary": "{deleted}: the key is gone from the list, and a live one is refused at every door; a repeat is 404",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{deleted}: the key is gone from the list, and a live one is refused at every door; a repeat is 404"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/keys/{id}/name": {
+   "post": {
+    "operationId": "post_v1_keys_id_name",
+    "summary": "{name}",
+    "description": "Request: {name}: up to 48 characters, \"\" clears it.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{name}"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "name": "indexer"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/scope": {
+   "patch": {
+    "operationId": "patch_v1_keys_id_scope",
+    "summary": "{key_id, scope}; the doors follow within a second",
+    "description": "Request: {scope}: the whole new list of planes, at least one.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{key_id, scope}; the doors follow within a second"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "scope": [
+         "rpc",
+         "grpc"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/caps": {
+   "patch": {
+    "operationId": "patch_v1_keys_id_caps",
+    "summary": "the stored list; the doors follow at once",
+    "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan or gpa.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "the stored list; the doors follow at once"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "per_method_caps": [
+         {
+          "method_class": "gpa",
+          "rps_ceiling": 5,
+          "allow": true
+         }
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/allowlist": {
+   "patch": {
+    "operationId": "patch_v1_keys_id_allowlist",
+    "summary": "{key_id, ip_allow}; a call from any other address is 403 at the door",
+    "description": "Request: {ip_allow}: the whole new list of IPv4 or IPv6 addresses and CIDRs, 16 at most; [] admits any address.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{key_id, ip_allow}; a call from any other address is 403 at the door"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "ip_allow": [
+         "203.0.113.7",
+         "198.51.100.0/24"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/limits": {
+   "patch": {
+    "operationId": "patch_v1_keys_id_limits",
+    "summary": "{max_connections, max_inflight}; the WebSocket and stream doors follow within 5 minutes",
+    "description": "Request: {max_connections, max_inflight}: 0 to 10,000 each; 0 or left out is the plan's own number, and both are replaced together.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "keys:write",
+    "responses": {
+     "200": {
+      "description": "{max_connections, max_inflight}; the WebSocket and stream doors follow within 5 minutes"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "max_connections": 100,
+        "max_inflight": 50
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/webhooks": {
+   "get": {
+    "operationId": "get_v1_webhooks",
+    "summary": "your webhooks, without their address lists",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:read",
+    "responses": {
+     "200": {
+      "description": "your webhooks, without their address lists"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   },
+   "post": {
+    "operationId": "post_v1_webhooks",
+    "summary": "{webhook, secret}: the signing secret, shown here once",
+    "description": "Request: the create fields.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:write",
+    "responses": {
+     "200": {
+      "description": "{webhook, secret}: the signing secret, shown here once"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/webhooks/{id}": {
+   "get": {
+    "operationId": "get_v1_webhooks_id",
+    "summary": "the webhook with its addresses",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:read",
+    "responses": {
+     "200": {
+      "description": "the webhook with its addresses"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "patch": {
+    "operationId": "patch_v1_webhooks_id",
+    "summary": "the webhook",
+    "description": "Request: any create field, status.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:write",
+    "responses": {
+     "200": {
+      "description": "the webhook"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   },
+   "delete": {
+    "operationId": "delete_v1_webhooks_id",
+    "summary": "{\"deleted\": true}",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:write",
+    "responses": {
+     "200": {
+      "description": "{\"deleted\": true}"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/webhooks/{id}/deliveries": {
+   "get": {
+    "operationId": "get_v1_webhooks_id_deliveries",
+    "summary": "its delivery log, newest first",
+    "description": "Request: none; ?limit=, ?before=.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:read",
+    "responses": {
+     "200": {
+      "description": "its delivery log, newest first"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/webhooks/{id}/rotate": {
+   "post": {
+    "operationId": "post_v1_webhooks_id_rotate",
+    "summary": "{secret, secret_hint, previous_valid_until}",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:write",
+    "responses": {
+     "200": {
+      "description": "{secret, secret_hint, previous_valid_until}"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/webhooks/{id}/test": {
+   "post": {
+    "operationId": "post_v1_webhooks_id_test",
+    "summary": "how one signed test event went",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "webhooks:write",
+    "responses": {
+     "200": {
+      "description": "how one signed test event went"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/usage": {
+   "get": {
+    "operationId": "get_v1_usage",
+    "summary": "[{utc_day, method, method_class, call_count, credits_charged}], oldest day first; with group=key each row also carries its key_id (null for calls made before a key was rotated, or by a key since deleted). A key_id that is not yours is 404, and an answer of more than 50,000 rows is 400: narrow the range or name a key. Answers are kept 15 s",
+    "description": "Request: none; ?from= and ?to= as YYYY-MM-DD, given together, both days included (the last 7 days when left out; over 90 days is 400), ?key_id=, ?group=key.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "usage:read",
+    "responses": {
+     "200": {
+      "description": "[{utc_day, method, method_class, call_count, credits_charged}], oldest day first; with group=key each row also carries its key_id (null for calls made before a key was rotated, or by a key since deleted). A key_id that is not yours is 404, and an answer of more than 50,000 rows is 400: narrow the range or name a key. Answers are kept 15 s"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/keys/usage": {
+   "get": {
+    "operationId": "get_v1_keys_usage",
+    "summary": "{period_start, period_end, account_credits, keys: [{key_id, credits, calls}]}: this calendar month (UTC) per service key, revoked ones included. Calls made before a key was rotated, or by a key since deleted, count in account_credits only; account_credits is null when the read failed",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "usage:read",
+    "responses": {
+     "200": {
+      "description": "{period_start, period_end, account_credits, keys: [{key_id, credits, calls}]}: this calendar month (UTC) per service key, revoked ones included. Calls made before a key was rotated, or by a key since deleted, count in account_credits only; account_credits is null when the read failed"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/keys/load": {
+   "get": {
+    "operationId": "get_v1_keys_load",
+    "summary": "[{key_id, rps_current, class_rps}]: calls a second over the last 20 s for each live key, in all and per method class",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "usage:read",
+    "responses": {
+     "200": {
+      "description": "[{key_id, rps_current, class_rps}]: calls a second over the last 20 s for each live key, in all and per method class"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/usage/hourly": {
+   "get": {
+    "operationId": "get_v1_usage_hourly",
+    "summary": "[{hour, key_id, method_class, calls, credits_charged, errors, resp_bytes}], kept 90 days; the newest hour can be two hours behind. Answers are kept 60 s",
+    "description": "Request: none; ?from= and ?to= as RFC 3339 times, given together (the last 24 hours when left out; over 7 days is 400), ?key_id=.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "usage:read",
+    "responses": {
+     "200": {
+      "description": "[{hour, key_id, method_class, calls, credits_charged, errors, resp_bytes}], kept 90 days; the newest hour can be two hours behind. Answers are kept 60 s"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/usage/latency": {
+   "get": {
+    "operationId": "get_v1_usage_latency",
+    "summary": "[{hour, key_id, method_class, calls, p50_ms, p95_ms, p99_ms}]: milliseconds with up to 3 decimals, kept 90 days. Answers are kept 60 s",
+    "description": "Request: none; the same ?from=, ?to= and ?key_id=.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "usage:read",
+    "responses": {
+     "200": {
+      "description": "[{hour, key_id, method_class, calls, p50_ms, p95_ms, p99_ms}]: milliseconds with up to 3 decimals, kept 90 days. Answers are kept 60 s"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/account": {
+   "get": {
+    "operationId": "get_v1_account",
+    "summary": "{account_id, email, wallet, status, created_at, tier, term, payments}: the plan and its term, and the last 24 payments",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "{account_id, email, wallet, status, created_at, tier, term, payments}: the plan and its term, and the last 24 payments"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/balance": {
+   "get": {
+    "operationId": "get_v1_balance",
+    "summary": "{granted, used, remaining}, in credits",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "{granted, used, remaining}, in credits"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/invoices": {
+   "get": {
+    "operationId": "get_v1_invoices",
+    "summary": "[{period_start, period_end, granted, used, current}]: credits per month, the running month first",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "[{period_start, period_end, granted, used, current}]: credits per month, the running month first"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/payments": {
+   "get": {
+    "operationId": "get_v1_payments",
+    "summary": "your payments, newest first, 1,000 at most: id, amount_minor, currency, status, method, tier or module and plan, months, credits_granted, reference, paid_at",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "your payments, newest first, 1,000 at most: id, amount_minor, currency, status, method, tier or module and plan, months, credits_granted, reference, paid_at"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/modules": {
+   "get": {
+    "operationId": "get_v1_modules",
+    "summary": "every module with its plans and what the account holds of it",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "every module with its plans and what the account holds of it"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/billing/crypto-intent/{id}": {
+   "get": {
+    "operationId": "get_v1_billing_crypto_intent_id",
+    "summary": "one on-chain payment of yours and its status: open, paid, held or expired",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "account:read",
+    "responses": {
+     "200": {
+      "description": "one on-chain payment of yours and its status: open, paid, held or expired"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/modules/{module}": {
+   "post": {
+    "operationId": "post_v1_modules_module",
+    "summary": "the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit",
+    "description": "Request: {plan}, or {} for the cheapest: a plan with no price (a priced one is 400 \"plan '<name>' must be purchased\").",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": "modules:write",
+    "responses": {
+     "200": {
+      "description": "the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "module",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "plan": "free"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/api-key": {
+   "get": {
+    "operationId": "get_v1_api_key",
+    "summary": "the calling key's own record",
+    "description": "Request: none.",
+    "security": [
+     {
+      "accountApiKey": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "the calling key's own record"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/account/api-keys/{id}/activity": {
+   "get": {
+    "operationId": "get_v1_account_api_keys_id_activity",
+    "summary": "[{ts, action, request_id, detail}]: what the key changed, newest first; another key's id is 404",
+    "description": "Request: none; ?limit= (50, at most 200), ?before= (a Unix-ms time).",
+    "security": [
+     {
+      "accountApiKey": []
+     },
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "[{ts, action, request_id, detail}]: what the key changed, newest first; another key's id is 404"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/account/api-keys": {
+   "post": {
+    "operationId": "post_v1_account_api_keys",
+    "summary": "the new key's record with its raw_key, this once; 409 at 5 live keys, 403 while the account is not active",
+    "description": "Request: {name, access, expires_in_days, ip_allow}: name 1 to 48 characters and access \"full\" or \"read\", both required; expires_in_days 30, 90 or 365 (null or left out: no expiry); ip_allow up to 16 addresses or CIDRs (left out: any address).",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "the new key's record with its raw_key, this once; 409 at 5 live keys, 403 while the account is not active"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       },
+       "example": {
+        "name": "ci-agent",
+        "access": "full",
+        "expires_in_days": 90,
+        "ip_allow": []
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "operationId": "get_v1_account_api_keys",
+    "summary": "the live keys' records, newest first",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "the live keys' records, newest first"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    }
+   }
+  },
+  "/v1/account/api-keys/{id}": {
+   "delete": {
+    "operationId": "delete_v1_account_api_keys_id",
+    "summary": "{api_key_id, revoked}; a repeat answers the same",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{api_key_id, revoked}; a repeat answers the same"
+     },
+     "401": {
+      "description": "no valid credential, or a call closed to account API keys"
+     },
+     "403": {
+      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+     },
+     "429": {
+      "description": "too many calls: wait Retry-After seconds"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

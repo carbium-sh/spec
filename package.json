@@ -1,0 +1,22 @@
+{
+  "name": "carbium-spec",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Machine-readable descriptions of Carbium's Solana services: openrpc.json for every served JSON-RPC method",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "node scripts/build-openrpc.mjs --sdk ../carbium-js --commit $(git -C ../carbium-js rev-parse HEAD) && node scripts/build-postman.mjs",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@open-rpc/schema-utils-js": "2.2.1",
+    "ajv": "8.20.0",
+    "newman": "6.2.3",
+    "ts-json-schema-generator": "2.10.0"
+  }
+}
