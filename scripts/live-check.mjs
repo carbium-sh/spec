@@ -200,19 +200,27 @@ export function httpCall(key, url = spec.servers[0].url) {
   return async (method, params) => {
     const wait = last + 1000 - Date.now()
     if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait))
-    last = Date.now()
     const [verb, path] = method.split(' ')
     const [target, init] = path
       ? [`${url}${path}?${new URLSearchParams(params)}`, { method: verb, headers: { 'x-api-key': key } }]
       : [url, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key }, body: JSON.stringify({ jsonrpc: '2.0', id: ++id, method, ...(params === undefined ? {} : { params }) }) }]
-    try {
-      const res = await fetch(target, { ...init, signal: AbortSignal.timeout(20_000) })
-      const text = await res.text()
-      let json
-      try { json = JSON.parse(text) } catch { json = undefined }
-      return { status: res.status, json }
-    } catch {
-      return { status: 0 }
+    // A 503 with Retry-After is the service filling a cache: ask again after that wait, up to four asks.
+    for (let asks = 1; ; asks++) {
+      last = Date.now()
+      try {
+        const res = await fetch(target, { ...init, signal: AbortSignal.timeout(20_000) })
+        const text = await res.text()
+        const after = Number(res.headers.get('retry-after'))
+        if (res.status === 503 && after > 0 && asks < 4) {
+          await new Promise((resolve) => setTimeout(resolve, Math.min(Math.max(after, 1), 30) * 1000))
+          continue
+        }
+        let json
+        try { json = JSON.parse(text) } catch { json = undefined }
+        return { status: res.status, json }
+      } catch {
+        return { status: 0 }
+      }
     }
   }
 }

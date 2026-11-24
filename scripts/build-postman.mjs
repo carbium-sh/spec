@@ -39,7 +39,7 @@ function rpcItem(method) {
   }
 }
 
-// The REST routes are the quote's REST form, so a test reads the quote's destAmountOut.
+// The REST route is the old quote path, so a test reads the quote's destAmountOut.
 const REST_TEST = [{ listen: 'test', script: { type: 'text/javascript', exec: [
   "pm.test('answers with a quote', () => {",
   '  pm.response.to.have.status(200)',
@@ -65,7 +65,7 @@ function restItem(route) {
 
 function accountItem(verb, path, operation) {
   const body = operation.requestBody?.content?.['application/json']?.example
-  const sessionOnly = operation.security.every((way) => 'session' in way)
+  const sessionOnly = operation.security.length > 0 && operation.security.every((way) => 'session' in way)
   return {
     name: `${verb} ${path}`,
     request: {
@@ -94,7 +94,7 @@ export function build() {
     info: {
       name: 'carbium services',
       description: [
-        'Every JSON-RPC method served over HTTPS at services.carbium.sh (the WebSocket subscriptions are in openrpc.json), the REST form of the quote, and every account API call on carbium.sh.',
+        'Every JSON-RPC method served over HTTPS at services.carbium.sh (the WebSocket subscriptions are in openrpc.json), the old REST quote route, and every account API call on carbium.sh.',
         'Keys: put serviceKey (a c_serv_ key) and accountKey (a c_acct_ key) in a Postman environment as current values, or in the Postman Vault, so a key never leaves with an exported or shared collection.',
         `Do not run the whole collection: the folder "${WRITES}" creates, changes and removes keys and webhooks, and some JSON-RPC calls cost many credits. Send those one at a time.`,
       ].join('\n\n'),

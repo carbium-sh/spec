@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { liveCheck, accounting, CALLS, SKIPS, spec } from '../scripts/live-check.mjs'
+import { liveCheck, httpCall, accounting, CALLS, SKIPS, spec } from '../scripts/live-check.mjs'
 
 const script = fileURLToPath(new URL('../scripts/live-check.mjs', import.meta.url))
 const copy = (x) => structuredClone(x)
@@ -247,4 +247,45 @@ test('the key never appears in the output, travels in the x-api-key header only,
   assert.ok(calls.length > CALLS.length, 'each refused method is tried once more')
   assert.ok(calls.every((c) => c.header && !c.elsewhere))
   assert.deepEqual(calls.slice(1).filter((c, i) => c.at - calls[i].at < 1000), [])
+})
+
+// The HTTPS caller against a stand-in fetch that answers from a list, on a clock that moves only when the caller waits.
+// A second call on the same caller follows the first, and no two requests may leave within a second of each other.
+async function asked(answers) {
+  const real = { fetch: globalThis.fetch, setTimeout: globalThis.setTimeout, now: Date.now }
+  const waits = []
+  const sent = []
+  let now = 0
+  let asks = 0
+  Date.now = () => now
+  globalThis.setTimeout = (fn, ms = 0, ...args) => {
+    waits.push(ms)
+    now += ms
+    return real.setTimeout(fn, 0, ...args)
+  }
+  globalThis.fetch = async () => {
+    sent.push(now)
+    const [status, after] = answers[Math.min(asks++, answers.length - 1)]
+    return new Response(JSON.stringify({ jsonrpc: '2.0', id: 1, result: asks }), { status, headers: after === undefined ? {} : { 'retry-after': String(after) } })
+  }
+  try {
+    const call = httpCall('any', 'https://stand-in.invalid')
+    const out = await call('getSupply')
+    const first = { status: out.status, result: out.json?.result, asks, waits: [...waits] }
+    await call('getSlot')
+    assert.deepEqual(sent.slice(1).filter((at, i) => at - sent[i] < 1000), [], 'at most one request a second, the asks again included')
+    return first
+  } finally {
+    Object.assign(globalThis, { fetch: real.fetch, setTimeout: real.setTimeout })
+    Date.now = real.now
+  }
+}
+
+test('a 503 with Retry-After is asked again after that wait, 30 seconds at most, and four asks at most', async () => {
+  // A cold cache as the service answers it: wait 1, wait longer, wait 1, then the answer.
+  assert.deepEqual(await asked([[503, 1], [503, 45], [503, 1], [200]]), { status: 200, result: 4, asks: 4, waits: [1000, 30000, 1000] })
+  assert.deepEqual(await asked([[503, 1]]), { status: 503, result: 4, asks: 4, waits: [1000, 1000, 1000] }, 'still refused at the fourth ask: handed back, so the run calls it UNREAD')
+  assert.deepEqual(await asked([[503]]), { status: 503, result: 1, asks: 1, waits: [] }, 'a 503 with no Retry-After is not asked again')
+  assert.deepEqual(await asked([[429, 5]]), { status: 429, result: 1, asks: 1, waits: [] }, 'a rate limit is not asked again')
+  assert.deepEqual((await asked([[503, 0.5], [200]])).waits, [1000], 'never sooner than a second')
 })

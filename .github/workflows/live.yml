@@ -1,5 +1,6 @@
 name: live
-# Calls every cheap HTTPS method once and checks each answer against its result schema in openrpc.json.
+# Calls every cheap HTTPS method once and checks each answer against its result schema in openrpc.json, and compares
+# openapi.json with the file carbium.sh serves. A scheduled run that fails opens an issue.
 on:
   schedule:
     - cron: '23 5 * * *'
@@ -16,7 +17,7 @@ jobs:
     # Only in this repository; no pull request ever runs this workflow, so a fork never sees the key.
     if: github.repository == 'carbium-sh/spec'
     runs-on: ubuntu-latest
-    # Above the worst case: two passes of 64 calls, each call cut off at 20 seconds.
+    # Above two passes of 64 calls, each cut off at 20 seconds; a run that keeps being told to wait is cut off here.
     timeout-minutes: 50
     environment: live
     steps:
@@ -34,3 +35,33 @@ jobs:
         shell: bash
         env:
           CARBIUM_KEY: ${{ secrets.CARBIUM_KEY }}
+  served:
+    # carbium.sh still serves the account API description this repository holds. No key.
+    if: github.repository == 'carbium-sh/spec'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: |
+          curl -fsS --retry 3 https://carbium.sh/openapi.json -o served.openapi.json
+          node -e "require('node:assert').deepStrictEqual(...['served.openapi.json', 'openapi.json'].map((f) => JSON.parse(require('node:fs').readFileSync(f, 'utf8'))))" \
+            || { echo 'carbium.sh/openapi.json differs from openapi.json: copy it here and run pnpm build'; exit 1; }
+  report:
+    # A scheduled run that failed opens one issue, or adds to the one already open. No key.
+    needs: [live, served]
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - run: |
+          title='The scheduled live run failed'
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then gh issue comment "$open" --repo "$GITHUB_REPOSITORY" --body "Failed again: $RUN_URL"
+          else gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$RUN_URL"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -1,7 +1,7 @@
 {
  "info": {
   "name": "carbium services",
-  "description": "Every JSON-RPC method served over HTTPS at services.carbium.sh (the WebSocket subscriptions are in openrpc.json), the REST form of the quote, and every account API call on carbium.sh.\n\nKeys: put serviceKey (a c_serv_ key) and accountKey (a c_acct_ key) in a Postman environment as current values, or in the Postman Vault, so a key never leaves with an exported or shared collection.\n\nDo not run the whole collection: the folder \"Changes the account\" creates, changes and removes keys and webhooks, and some JSON-RPC calls cost many credits. Send those one at a time.",
+  "description": "Every JSON-RPC method served over HTTPS at services.carbium.sh (the WebSocket subscriptions are in openrpc.json), the old REST quote route, and every account API call on carbium.sh.\n\nKeys: put serviceKey (a c_serv_ key) and accountKey (a c_acct_ key) in a Postman environment as current values, or in the Postman Vault, so a key never leaves with an exported or shared collection.\n\nDo not run the whole collection: the folder \"Changes the account\" creates, changes and removes keys and webhooks, and some JSON-RPC calls cost many credits. Send those one at a time.",
   "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
  },
  "variable": [
@@ -2778,7 +2778,7 @@
          ],
          "variable": []
         },
-        "description": "Request: none. Answers: your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value."
+        "description": "Request: none. Answers: your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at. Never a key's value."
        }
       },
       {
@@ -3136,6 +3136,110 @@
         },
         "description": "Request: none. Answers: the live keys' records, newest first. Needs a dashboard session: an account API key is refused."
        }
+      },
+      {
+       "name": "GET /v1/signup/challenge",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/signup/challenge",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "signup",
+          "challenge"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {challenge, difficulty}: a proof-of-work puzzle, asked for by a first sign-in."
+       }
+      },
+      {
+       "name": "GET /v1/terms",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/terms",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "terms"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {version, url}: the terms a new account accepts; an empty version means none are asked."
+       }
+      },
+      {
+       "name": "GET /v1/plans",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/plans",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "plans"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {plans, quote}: every plan and Quote plan with its price; with a session, what this account can buy."
+       }
+      },
+      {
+       "name": "GET /v1/account/deletion",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/deletion",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "deletion"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: {confirm, blocked, keys, credits_remaining, terms}: what deleting the account would end. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "GET /v1/payments/{id}/document",
+       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/payments/:id/document",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "payments",
+          ":id",
+          "document"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {pdf, page}: the card provider's receipt links; an on-chain payment is 404. Needs a dashboard session: an account API key is refused."
+       }
       }
      ]
     },
@@ -3173,7 +3277,7 @@
           }
          }
         },
-        "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc and quote (rpc, ws and grpc when left out; quote needs the Quote module). Answers: {key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module."
+        "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc, quote and das (rpc, ws, grpc and das when left out; quote needs the Quote module). Answers: {key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module."
        }
       },
       {
@@ -3323,14 +3427,14 @@
         },
         "body": {
          "mode": "raw",
-         "raw": "{\n  \"scope\": [\n    \"rpc\",\n    \"grpc\"\n  ]\n}",
+         "raw": "{\n  \"scope\": [\n    \"rpc\",\n    \"grpc\",\n    \"das\"\n  ]\n}",
          "options": {
           "raw": {
            "language": "json"
           }
          }
         },
-        "description": "Request: {scope}: the whole new list of planes, at least one. Answers: {key_id, scope}; the doors follow within a second."
+        "description": "Request: {scope}: the whole new list of planes (rpc, ws, grpc, quote, das), at least one; a plane left out is removed. Answers: {key_id, scope}; the doors follow within a second."
        }
       },
       {
@@ -3370,7 +3474,7 @@
           }
          }
         },
-        "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan or gpa. Answers: the stored list; the doors follow at once."
+        "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan, gpa or das (the 10 DAS methods together). Answers: the stored list; the doors follow at once."
        }
       },
       {
@@ -3575,6 +3679,25 @@
        }
       },
       {
+       "name": "DELETE /v1/account",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account"
+         ],
+         "variable": []
+        },
+        "description": "Request: {confirm}: exactly \"DELETE\". Answers: {deleted, keys_revoked, renewals_stopped}. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
        "name": "POST /v1/modules/{module}",
        "request": {
         "method": "POST",
@@ -3611,6 +3734,31 @@
          }
         },
         "description": "Request: {plan}, or {} for the cheapest: a plan with no price (a priced one is 400 \"plan '<name>' must be purchased\"). Answers: the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit."
+       }
+      },
+      {
+       "name": "DELETE /v1/modules/{module}",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/modules/:module",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "modules",
+          ":module"
+         ],
+         "variable": [
+          {
+           "key": "module",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: the module as the account now holds it, removed. Needs a dashboard session: an account API key is refused."
        }
       },
       {
@@ -3671,6 +3819,232 @@
          ]
         },
         "description": "Request: none. Answers: {api_key_id, revoked}; a repeat answers the same. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/auth/wallet",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/auth/wallet",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "auth",
+          "wallet"
+         ],
+         "variable": []
+        },
+        "description": "Request: {step, wallet}: step \"challenge\" answers a message to sign; step \"verify\" takes nonce_token and signature (and pow on a first sign-in). Answers: {nonce_token, message} for \"challenge\"; {session_token, account} for \"verify\"."
+       }
+      },
+      {
+       "name": "POST /v1/login/pin",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/login/pin",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "login",
+          "pin"
+         ],
+         "variable": []
+        },
+        "description": "Request: {email}, and pow for an address with no account yet. Answers: {pin_token}: a six-digit code is mailed; the answer is the same for every address."
+       }
+      },
+      {
+       "name": "POST /v1/login/pin/verify",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/login/pin/verify",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "login",
+          "pin",
+          "verify"
+         ],
+         "variable": []
+        },
+        "description": "Request: {pin_token, code}. Answers: {session_token, account}."
+       }
+      },
+      {
+       "name": "POST /v1/logout",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/logout",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "logout"
+         ],
+         "variable": []
+        },
+        "description": "Request: none. Answers: 204, no body: every session of the account ends. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/account/link-wallet",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/account/link-wallet",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "account",
+          "link-wallet"
+         ],
+         "variable": []
+        },
+        "description": "Request: {step, wallet}: step \"nonce\" answers a message to sign; step \"link\" takes nonce_token and signature. Answers: {nonce_token, message} for \"nonce\"; the account with a new session_token for \"link\" (the old sessions end). Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/keys/{id}/secret",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/keys/:id/secret",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "keys",
+          ":id",
+          "secret"
+         ],
+         "variable": [
+          {
+           "key": "id",
+           "value": ""
+          }
+         ]
+        },
+        "description": "Request: none. Answers: {available, raw_key}: the key's value while the account still holds it, else available false. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/billing/checkout",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/checkout",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "checkout"
+         ],
+         "variable": []
+        },
+        "description": "Request: {tier} for a plan, or {module, plan} for a module plan; recurring for a card subscription. Answers: {url, session_id, amount_minor, currency, recurring, term}: the card checkout page to open. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/billing/crypto-intent",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/crypto-intent",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "crypto-intent"
+         ],
+         "variable": []
+        },
+        "description": "Request: {tier} or {module, plan}; months, mint (USDC or USDT) and the paying wallet as payer. Answers: one on-chain payment to make: recipient, amount, reference, expiry, and a ready transaction when payer is given. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/billing/portal",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/portal",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "portal"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; ?module=. Answers: {url}: the card provider's page for the subscription. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "POST /v1/billing/renewal",
+       "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/renewal",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "renewal"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; ?module=. Answers: {module, renews, ends_at}: the renewal is cancelled, the term runs to its end; 409 when there is none. Needs a dashboard session: an account API key is refused."
+       }
+      },
+      {
+       "name": "DELETE /v1/billing/renewal",
+       "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+         "raw": "{{accountUrl}}/v1/billing/renewal",
+         "host": [
+          "{{accountUrl}}"
+         ],
+         "path": [
+          "v1",
+          "billing",
+          "renewal"
+         ],
+         "variable": []
+        },
+        "description": "Request: none; ?module=. Answers: {module, renews, ends_at}: the cancelled renewal is resumed; 409 when there is none. Needs a dashboard session: an account API key is refused."
        }
       }
      ]

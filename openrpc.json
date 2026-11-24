@@ -7,7 +7,7 @@
   "license": {
    "name": "MIT"
   },
-  "x-sdk-commit": "56057543fce1b1e366a4aa5bf90feaff2902c718"
+  "x-sdk-commit": "3dbf56ccb0119f2134b799a622003eb81672168f"
  },
  "servers": [
   {
@@ -3211,6 +3211,30 @@
        1
       ]
      }
+    },
+    {
+     "name": "maxAccounts",
+     "required": false,
+     "schema": {
+      "type": "number"
+     }
+    },
+    {
+     "name": "integrator_fee_bps",
+     "required": false,
+     "schema": {
+      "type": [
+       "number",
+       "string"
+      ]
+     }
+    },
+    {
+     "name": "integrator_fee_account",
+     "required": false,
+     "schema": {
+      "$ref": "#/components/schemas/Base58"
+     }
     }
    ],
    "result": {
@@ -6156,6 +6180,29 @@
        "mint"
       ]
      },
+     "integratorFee": {
+      "type": "object",
+      "properties": {
+       "amount": {
+        "type": "string"
+       },
+       "feeBps": {
+        "type": "number"
+       },
+       "mint": {
+        "$ref": "#/components/schemas/Base58"
+       },
+       "account": {
+        "$ref": "#/components/schemas/Base58"
+       }
+      },
+      "required": [
+       "amount",
+       "feeBps",
+       "mint",
+       "account"
+      ]
+     },
      "txVersion": {
       "type": "number",
       "const": 1
@@ -6291,6 +6338,18 @@
        0,
        1
       ]
+     },
+     "maxAccounts": {
+      "type": "number"
+     },
+     "integrator_fee_bps": {
+      "type": [
+       "number",
+       "string"
+      ]
+     },
+     "integrator_fee_account": {
+      "$ref": "#/components/schemas/Base58"
      }
     },
     "required": [

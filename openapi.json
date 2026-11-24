@@ -3,11 +3,15 @@
  "info": {
   "title": "carbium account API",
   "version": "1",
-  "description": "Manage a carbium account by API with an account API key (c_acct_...): service keys and their policies, webhooks, usage and telemetry. A key cannot buy, upgrade or cancel anything. Docs: /docs#account-api-keys"
+  "description": "Run a carbium account by API. With an account API key (c_acct_...): service keys and their policies, webhooks, usage and telemetry; a key cannot buy, upgrade or cancel anything. With a session (a wallet signature or an e-mailed code): the same, and buying, renewing and closing the account. Docs: /docs/account-api-keys"
  },
  "servers": [
   {
-   "url": "/"
+   "url": "https://carbium.sh"
+  },
+  {
+   "url": "/",
+   "description": "the dashboard name this file was read from"
   }
  ],
  "components": {
@@ -20,7 +24,2299 @@
    "session": {
     "type": "http",
     "scheme": "bearer",
-    "description": "Authorization: Bearer <dashboard session token>"
+    "description": "Authorization: Bearer <session token>, as POST /v1/auth/wallet or /v1/login/pin/verify answers it; it works on the dashboard name that issued it"
+   }
+  },
+  "responses": {
+   "BadRequest": {
+    "description": "the body, a query value or a path value is not what the call takes (JSON from the call itself, plain text when a query or path value does not parse)",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     },
+     "text/plain": {
+      "schema": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "Unauthorized": {
+    "description": "no valid credential, or a call closed to account API keys",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   },
+   "Forbidden": {
+    "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   },
+   "NotFound": {
+    "description": "no such thing on this account",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   },
+   "Conflict": {
+    "description": "the account's state refuses the call; the message says why",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   },
+   "Unreadable": {
+    "description": "a JSON body whose fields or types do not fit the call (415 without a JSON content type): the reader's own words, as plain text",
+    "content": {
+     "text/plain": {
+      "schema": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "TooMany": {
+    "description": "too many calls: back off and retry; wait Retry-After seconds when the answer carries it",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   },
+   "Failure": {
+    "description": "any other failure: 500 internal, 503 upstream or unavailable (a store, the ledger or the payment provider is unreachable: retry)",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      }
+     }
+    }
+   }
+  },
+  "schemas": {
+   "Error": {
+    "type": "object",
+    "properties": {
+     "error": {
+      "type": "string",
+      "enum": [
+       "bad_request",
+       "unauthorized",
+       "forbidden",
+       "not_found",
+       "conflict",
+       "rate_limited",
+       "internal",
+       "upstream",
+       "unavailable"
+      ]
+     },
+     "message": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "error",
+     "message"
+    ]
+   },
+   "keys.KeyView": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "prefix": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "tier": {
+      "type": "string"
+     },
+     "scope": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "rpc",
+        "ws",
+        "grpc",
+        "quote",
+        "das"
+       ]
+      }
+     },
+     "status": {
+      "type": "string"
+     },
+     "per_method_caps": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/keys.MethodCapView"
+      }
+     },
+     "max_connections": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "max_inflight": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "ip_allow": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "rotated_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "revoked_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "key_id",
+     "prefix",
+     "name",
+     "tier",
+     "scope",
+     "status",
+     "per_method_caps",
+     "max_connections",
+     "max_inflight",
+     "ip_allow",
+     "created_at",
+     "rotated_at",
+     "revoked_at"
+    ]
+   },
+   "keys.MethodCapView": {
+    "type": "object",
+    "properties": {
+     "method_class": {
+      "type": "string"
+     },
+     "rps_ceiling": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "allow": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "method_class",
+     "rps_ceiling",
+     "allow"
+    ]
+   },
+   "keys.CreateReq": {
+    "type": "object",
+    "properties": {
+     "scope": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "rpc",
+        "ws",
+        "grpc",
+        "quote",
+        "das"
+       ]
+      }
+     },
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "keys.CreateResp": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "prefix": {
+      "type": "string"
+     },
+     "raw_key": {
+      "type": "string"
+     },
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "key_id",
+     "prefix",
+     "raw_key",
+     "name"
+    ]
+   },
+   "keys.RotateResp": {
+    "type": "object",
+    "properties": {
+     "prefix": {
+      "type": "string"
+     },
+     "raw_key": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "prefix",
+     "raw_key"
+    ]
+   },
+   "keys.RevokeResp": {
+    "type": "object",
+    "properties": {
+     "applied": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "applied"
+    ]
+   },
+   "keys.DeleteResp": {
+    "type": "object",
+    "properties": {
+     "deleted": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "deleted"
+    ]
+   },
+   "keys.SecretResp": {
+    "type": "object",
+    "properties": {
+     "available": {
+      "type": "boolean"
+     },
+     "raw_key": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "available"
+    ]
+   },
+   "keys.MethodCapInput": {
+    "type": "object",
+    "properties": {
+     "method_class": {
+      "type": "string",
+      "enum": [
+       "o1_cached",
+       "bounded_read",
+       "bounded_slot",
+       "write_send",
+       "compute",
+       "bounded_disk",
+       "range",
+       "scan",
+       "gpa",
+       "das"
+      ]
+     },
+     "rps_ceiling": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "allow": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "method_class"
+    ]
+   },
+   "keys.CapsReq": {
+    "type": "object",
+    "properties": {
+     "per_method_caps": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/keys.MethodCapInput"
+      }
+     }
+    },
+    "required": [
+     "per_method_caps"
+    ]
+   },
+   "keys.AllowlistReq": {
+    "type": "object",
+    "properties": {
+     "ip_allow": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "required": [
+     "ip_allow"
+    ]
+   },
+   "keys.AllowlistResp": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "ip_allow": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "required": [
+     "key_id",
+     "ip_allow"
+    ]
+   },
+   "keys.LimitsReq": {
+    "type": "object",
+    "properties": {
+     "max_connections": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "max_inflight": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     }
+    }
+   },
+   "keys.LimitsResp": {
+    "type": "object",
+    "properties": {
+     "max_connections": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "max_inflight": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     }
+    },
+    "required": [
+     "max_connections",
+     "max_inflight"
+    ]
+   },
+   "keys.ScopeReq": {
+    "type": "object",
+    "properties": {
+     "scope": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "rpc",
+        "ws",
+        "grpc",
+        "quote",
+        "das"
+       ]
+      },
+      "minItems": 1
+     }
+    },
+    "required": [
+     "scope"
+    ]
+   },
+   "keys.ScopeResp": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "scope": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "rpc",
+        "ws",
+        "grpc",
+        "quote",
+        "das"
+       ]
+      }
+     }
+    },
+    "required": [
+     "key_id",
+     "scope"
+    ]
+   },
+   "keys.RenameReq": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "keys.RenameResp": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "keys.KeyLoad": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "rps_current": {
+      "type": "number"
+     },
+     "class_rps": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "number"
+      }
+     }
+    },
+    "required": [
+     "key_id",
+     "rps_current",
+     "class_rps"
+    ]
+   },
+   "keys.KeyUsage": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "credits": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "calls": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "key_id",
+     "credits",
+     "calls"
+    ]
+   },
+   "keys.KeyUsageView": {
+    "type": "object",
+    "properties": {
+     "period_start": {
+      "type": "string"
+     },
+     "period_end": {
+      "type": "string"
+     },
+     "account_credits": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "keys": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/keys.KeyUsage"
+      }
+     }
+    },
+    "required": [
+     "period_start",
+     "period_end",
+     "account_credits",
+     "keys"
+    ]
+   },
+   "account_keys.KeyView": {
+    "type": "object",
+    "properties": {
+     "api_key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "prefix": {
+      "type": "string"
+     },
+     "access": {
+      "type": "string",
+      "enum": [
+       "full",
+       "read"
+      ]
+     },
+     "scopes": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "ip_allow": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "created_at": {
+      "type": "string"
+     },
+     "expires_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "last_used_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "api_key_id",
+     "name",
+     "prefix",
+     "access",
+     "scopes",
+     "ip_allow",
+     "created_at",
+     "expires_at",
+     "last_used_at"
+    ]
+   },
+   "account_keys.CreateReq": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "access": {
+      "type": "string",
+      "enum": [
+       "full",
+       "read"
+      ]
+     },
+     "expires_in_days": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "enum": [
+       30,
+       90,
+       365,
+       null
+      ]
+     },
+     "ip_allow": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "required": [
+     "name",
+     "access"
+    ]
+   },
+   "account_keys.Created": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/account_keys.KeyView"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "raw_key": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "raw_key"
+      ]
+     }
+    ]
+   },
+   "account_keys.Revoked": {
+    "type": "object",
+    "properties": {
+     "api_key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "revoked": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "api_key_id",
+     "revoked"
+    ]
+   },
+   "account_keys.Activity": {
+    "type": "object",
+    "properties": {
+     "ts": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "action": {
+      "type": "string"
+     },
+     "request_id": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "detail": {}
+    },
+    "required": [
+     "ts",
+     "action",
+     "request_id",
+     "detail"
+    ]
+   },
+   "webhooks.WebhookView": {
+    "type": "object",
+    "properties": {
+     "webhook_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "key_id": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "url": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "active",
+       "paused",
+       "disabled"
+      ]
+     },
+     "status_reason": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "tx_status": {
+      "type": "string",
+      "enum": [
+       "all",
+       "success",
+       "failed"
+      ]
+     },
+     "address_count": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "addresses": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "secret_hint": {
+      "type": "string"
+     },
+     "has_auth_header": {
+      "type": "boolean"
+     },
+     "consecutive_failures": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "last_success_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "last_failure_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "created_at": {
+      "type": "string"
+     },
+     "updated_at": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "webhook_id",
+     "key_id",
+     "name",
+     "url",
+     "status",
+     "status_reason",
+     "tx_status",
+     "address_count",
+     "secret_hint",
+     "has_auth_header",
+     "consecutive_failures",
+     "last_success_at",
+     "last_failure_at",
+     "created_at",
+     "updated_at"
+    ]
+   },
+   "webhooks.CreateReq": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "url": {
+      "type": "string"
+     },
+     "addresses": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "name": {
+      "type": "string"
+     },
+     "tx_status": {
+      "type": "string",
+      "enum": [
+       "all",
+       "success",
+       "failed"
+      ]
+     },
+     "auth_header": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "key_id",
+     "url",
+     "addresses"
+    ]
+   },
+   "webhooks.UpdateReq": {
+    "type": "object",
+    "properties": {
+     "key_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "url": {
+      "type": "string"
+     },
+     "addresses": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "name": {
+      "type": "string"
+     },
+     "tx_status": {
+      "type": "string",
+      "enum": [
+       "all",
+       "success",
+       "failed"
+      ]
+     },
+     "auth_header": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "active",
+       "paused"
+      ]
+     }
+    }
+   },
+   "webhooks.CreateResp": {
+    "type": "object",
+    "properties": {
+     "webhook": {
+      "$ref": "#/components/schemas/webhooks.WebhookView"
+     },
+     "secret": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "webhook",
+     "secret"
+    ]
+   },
+   "webhooks.RotateResp": {
+    "type": "object",
+    "properties": {
+     "secret": {
+      "type": "string"
+     },
+     "secret_hint": {
+      "type": "string"
+     },
+     "previous_valid_until": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "secret",
+     "secret_hint",
+     "previous_valid_until"
+    ]
+   },
+   "webhooks.DeleteResp": {
+    "type": "object",
+    "properties": {
+     "deleted": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "deleted"
+    ]
+   },
+   "webhooks.DeliveryView": {
+    "type": "object",
+    "properties": {
+     "ts": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "event_id": {
+      "type": "string"
+     },
+     "slot": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "delivery",
+       "test"
+      ]
+     },
+     "attempt": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "outcome": {
+      "type": "string",
+      "enum": [
+       "delivered",
+       "failed",
+       "dropped",
+       "refused"
+      ]
+     },
+     "http_status": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "reason": {
+      "type": "string"
+     },
+     "latency_ms": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "cursor": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ts",
+     "event_id",
+     "slot",
+     "kind",
+     "attempt",
+     "outcome",
+     "http_status",
+     "reason",
+     "latency_ms",
+     "cursor"
+    ]
+   },
+   "webhooks.TestView": {
+    "type": "object",
+    "properties": {
+     "event_id": {
+      "type": "string"
+     },
+     "ts": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "outcome": {
+      "type": "string"
+     },
+     "http_status": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "reason": {
+      "type": "string"
+     },
+     "latency_ms": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "refusal": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "event_id",
+     "ts",
+     "outcome",
+     "http_status",
+     "reason",
+     "latency_ms",
+     "refusal"
+    ]
+   },
+   "usage.DayRow": {
+    "type": "object",
+    "properties": {
+     "utc_day": {
+      "type": "string"
+     },
+     "method": {
+      "type": "string"
+     },
+     "method_class": {
+      "type": "string"
+     },
+     "call_count": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "credits_charged": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "key_id": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     }
+    },
+    "required": [
+     "utc_day",
+     "method",
+     "method_class",
+     "call_count",
+     "credits_charged"
+    ]
+   },
+   "usage.HourRow": {
+    "type": "object",
+    "properties": {
+     "hour": {
+      "type": "string"
+     },
+     "key_id": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "method_class": {
+      "type": "string"
+     },
+     "calls": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "credits_charged": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "errors": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "resp_bytes": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "hour",
+     "key_id",
+     "method_class",
+     "calls",
+     "credits_charged",
+     "errors",
+     "resp_bytes"
+    ]
+   },
+   "usage.LatencyRow": {
+    "type": "object",
+    "properties": {
+     "hour": {
+      "type": "string"
+     },
+     "key_id": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "method_class": {
+      "type": "string"
+     },
+     "calls": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "p50_ms": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "p95_ms": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "p99_ms": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "hour",
+     "key_id",
+     "method_class",
+     "calls",
+     "p50_ms",
+     "p95_ms",
+     "p99_ms"
+    ]
+   },
+   "balance.BalanceView": {
+    "type": "object",
+    "properties": {
+     "granted": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "used": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "remaining": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "granted",
+     "used",
+     "remaining"
+    ]
+   },
+   "balance.InvoiceView": {
+    "type": "object",
+    "properties": {
+     "period_start": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "period_end": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "granted": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "used": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "current": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "period_start",
+     "period_end",
+     "granted",
+     "used",
+     "current"
+    ]
+   },
+   "signup.ChallengeResp": {
+    "type": "object",
+    "properties": {
+     "challenge": {
+      "type": "string"
+     },
+     "difficulty": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "challenge",
+     "difficulty"
+    ]
+   },
+   "signup.Terms": {
+    "type": "object",
+    "properties": {
+     "version": {
+      "type": "string"
+     },
+     "url": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "version",
+     "url"
+    ]
+   },
+   "signup.PowInput": {
+    "type": "object",
+    "properties": {
+     "challenge": {
+      "type": "string"
+     },
+     "nonce": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "challenge",
+     "nonce"
+    ]
+   },
+   "signup.PinStartReq": {
+    "type": "object",
+    "properties": {
+     "email": {
+      "type": "string"
+     },
+     "pow": {
+      "$ref": "#/components/schemas/signup.PowInput"
+     },
+     "terms_version": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "email"
+    ]
+   },
+   "signup.PinStartResp": {
+    "type": "object",
+    "properties": {
+     "pin_token": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "pin_token"
+    ]
+   },
+   "signup.PinVerifyReq": {
+    "type": "object",
+    "properties": {
+     "pin_token": {
+      "type": "string"
+     },
+     "code": {
+      "type": "string"
+     },
+     "terms_version": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "pin_token",
+     "code"
+    ]
+   },
+   "signup.AccountView": {
+    "type": "object",
+    "properties": {
+     "account_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "email": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "wallet": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "status": {
+      "type": "string"
+     },
+     "created_at": {
+      "type": "string"
+     },
+     "tier": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "account_id",
+     "email",
+     "wallet",
+     "status",
+     "created_at",
+     "tier"
+    ]
+   },
+   "signup.SessionResp": {
+    "type": "object",
+    "properties": {
+     "session_token": {
+      "type": "string"
+     },
+     "account": {
+      "$ref": "#/components/schemas/signup.AccountView"
+     }
+    },
+    "required": [
+     "session_token",
+     "account"
+    ]
+   },
+   "signup.TermView": {
+    "type": "object",
+    "properties": {
+     "tier": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     },
+     "period_start": {
+      "type": "string"
+     },
+     "period_end": {
+      "type": "string"
+     },
+     "cancel_at_period_end": {
+      "type": "boolean"
+     },
+     "auto_renew": {
+      "type": "boolean"
+     },
+     "contract": {
+      "type": "boolean"
+     },
+     "linked": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "tier",
+     "status",
+     "period_start",
+     "period_end",
+     "cancel_at_period_end",
+     "auto_renew",
+     "contract",
+     "linked"
+    ]
+   },
+   "signup.PaymentView": {
+    "type": "object",
+    "properties": {
+     "amount_minor": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     },
+     "credits_granted": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "received_at": {
+      "type": "string"
+     },
+     "module": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "plan": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "tier": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "method": {
+      "type": "string"
+     },
+     "reference": {
+      "type": "string"
+     },
+     "payer": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "months": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     },
+     "mint": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "paid_at": {
+      "type": "string"
+     },
+     "document": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "amount_minor",
+     "currency",
+     "status",
+     "credits_granted",
+     "received_at",
+     "module",
+     "plan",
+     "tier",
+     "id",
+     "method",
+     "reference",
+     "payer",
+     "months",
+     "mint",
+     "paid_at",
+     "document"
+    ]
+   },
+   "signup.AccountFull": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/signup.AccountView"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "term": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/signup.TermView"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "payments": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/signup.PaymentView"
+        }
+       }
+      },
+      "required": [
+       "term",
+       "payments"
+      ]
+     }
+    ]
+   },
+   "wallet.WalletReq": {
+    "type": "object",
+    "properties": {
+     "step": {
+      "type": "string",
+      "enum": [
+       "challenge",
+       "verify",
+       "nonce",
+       "link"
+      ]
+     },
+     "wallet": {
+      "type": "string"
+     },
+     "nonce_token": {
+      "type": "string"
+     },
+     "signature": {
+      "type": "string"
+     },
+     "pow": {
+      "$ref": "#/components/schemas/signup.PowInput"
+     },
+     "terms_version": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "step",
+     "wallet"
+    ]
+   },
+   "wallet.LoginReq": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/wallet.WalletReq"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "step": {
+        "type": "string",
+        "enum": [
+         "challenge",
+         "verify"
+        ]
+       }
+      },
+      "required": [
+       "step"
+      ]
+     }
+    ]
+   },
+   "wallet.LinkReq": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/wallet.WalletReq"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "step": {
+        "type": "string",
+        "enum": [
+         "nonce",
+         "link"
+        ]
+       }
+      },
+      "required": [
+       "step"
+      ]
+     }
+    ]
+   },
+   "wallet.ChallengeResp": {
+    "type": "object",
+    "properties": {
+     "nonce_token": {
+      "type": "string"
+     },
+     "message": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "nonce_token",
+     "message"
+    ]
+   },
+   "wallet.LinkedResp": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/signup.AccountView"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "session_token": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "session_token"
+      ]
+     }
+    ]
+   },
+   "billing.Plan": {
+    "type": "object",
+    "properties": {
+     "tier": {
+      "type": "string"
+     },
+     "amount_minor": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "period": {
+      "type": "string"
+     },
+     "sellable": {
+      "type": "boolean"
+     },
+     "recurring": {
+      "type": "boolean"
+     },
+     "card": {
+      "type": "boolean"
+     },
+     "credit_grant": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "format": "int64"
+     }
+    },
+    "required": [
+     "tier",
+     "amount_minor",
+     "currency",
+     "period",
+     "sellable",
+     "recurring",
+     "card",
+     "credit_grant"
+    ]
+   },
+   "billing.PlansResp": {
+    "type": "object",
+    "properties": {
+     "plans": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/billing.Plan"
+      }
+     },
+     "quote": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/modules.PlanView"
+      }
+     }
+    },
+    "required": [
+     "plans",
+     "quote"
+    ]
+   },
+   "billing.CheckoutReq": {
+    "type": "object",
+    "properties": {
+     "tier": {
+      "type": "string"
+     },
+     "module": {
+      "type": "string"
+     },
+     "plan": {
+      "type": "string"
+     },
+     "recurring": {
+      "type": "boolean"
+     }
+    }
+   },
+   "billing.TermPreview": {
+    "type": "object",
+    "properties": {
+     "end": {
+      "type": "string"
+     },
+     "unused_days": {
+      "type": "number"
+     },
+     "carried_days": {
+      "type": "number"
+     },
+     "from": {
+      "type": "string"
+     },
+     "first_charge": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "end",
+     "unused_days",
+     "carried_days"
+    ]
+   },
+   "billing.CheckoutResp": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string"
+     },
+     "session_id": {
+      "type": "string"
+     },
+     "tier": {
+      "type": "string"
+     },
+     "module": {
+      "type": "string"
+     },
+     "plan": {
+      "type": "string"
+     },
+     "amount_minor": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "recurring": {
+      "type": "boolean"
+     },
+     "term": {
+      "$ref": "#/components/schemas/billing.TermPreview"
+     }
+    },
+    "required": [
+     "url",
+     "session_id",
+     "amount_minor",
+     "currency",
+     "recurring",
+     "term"
+    ]
+   },
+   "billing.PortalResp": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "url"
+    ]
+   },
+   "billing.RenewalView": {
+    "type": "object",
+    "properties": {
+     "module": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "renews": {
+      "type": "boolean"
+     },
+     "ends_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "module",
+     "renews",
+     "ends_at"
+    ]
+   },
+   "billing.DocumentResp": {
+    "type": "object",
+    "properties": {
+     "pdf": {
+      "type": "string"
+     },
+     "page": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "pdf",
+     "page"
+    ]
+   },
+   "modules.PlanView": {
+    "type": "object",
+    "properties": {
+     "plan": {
+      "type": "string"
+     },
+     "amount_minor": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "sellable": {
+      "type": "boolean"
+     },
+     "recurring": {
+      "type": "boolean"
+     },
+     "card": {
+      "type": "boolean"
+     },
+     "rps": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "rpm": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "plan",
+     "amount_minor",
+     "currency",
+     "sellable",
+     "recurring",
+     "card",
+     "rps",
+     "rpm"
+    ]
+   },
+   "modules.Term": {
+    "type": "object",
+    "properties": {
+     "status": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "cancel_at_period_end": {
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "period_start": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "period_end": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "auto_renew": {
+      "type": "boolean"
+     },
+     "contract": {
+      "type": "boolean"
+     },
+     "linked": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "status",
+     "cancel_at_period_end",
+     "period_start",
+     "period_end",
+     "auto_renew",
+     "contract",
+     "linked"
+    ]
+   },
+   "modules.ModuleView": {
+    "allOf": [
+     {
+      "$ref": "#/components/schemas/modules.Term"
+     },
+     {
+      "type": "object",
+      "properties": {
+       "module": {
+        "type": "string"
+       },
+       "label": {
+        "type": "string"
+       },
+       "blurb": {
+        "type": "string"
+       },
+       "available": {
+        "type": "boolean"
+       },
+       "enabled": {
+        "type": "boolean"
+       },
+       "plan": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "plans": {
+        "type": "array",
+        "items": {
+         "$ref": "#/components/schemas/modules.PlanView"
+        }
+       }
+      },
+      "required": [
+       "module",
+       "label",
+       "blurb",
+       "available",
+       "enabled",
+       "plan",
+       "plans"
+      ]
+     }
+    ]
+   },
+   "modules.AddReq": {
+    "type": "object",
+    "properties": {
+     "plan": {
+      "type": "string"
+     }
+    }
+   },
+   "crypto.IntentReq": {
+    "type": "object",
+    "properties": {
+     "tier": {
+      "type": "string"
+     },
+     "module": {
+      "type": "string"
+     },
+     "plan": {
+      "type": "string"
+     },
+     "months": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "mint": {
+      "type": "string"
+     },
+     "payer": {
+      "type": "string"
+     }
+    }
+   },
+   "crypto.Refused": {
+    "type": "object",
+    "properties": {
+     "signature": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "signature",
+     "reason"
+    ]
+   },
+   "crypto.IntentResp": {
+    "type": "object",
+    "properties": {
+     "intent_id": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "open",
+       "paid",
+       "held",
+       "expired"
+      ]
+     },
+     "recipient": {
+      "type": "string"
+     },
+     "mint": {
+      "type": "string"
+     },
+     "decimals": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "amount": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "amount_ui": {
+      "type": "string"
+     },
+     "reference": {
+      "type": "string"
+     },
+     "expiry": {
+      "type": "string"
+     },
+     "expiry_unix": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "tier": {
+      "type": "string"
+     },
+     "module": {
+      "type": "string"
+     },
+     "plan": {
+      "type": "string"
+     },
+     "months": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "amount_minor": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "solana_pay_url": {
+      "type": "string"
+     },
+     "term": {
+      "$ref": "#/components/schemas/billing.TermPreview"
+     },
+     "signature": {
+      "type": "string"
+     },
+     "refused": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/crypto.Refused"
+      }
+     },
+     "tx": {
+      "type": "string"
+     },
+     "payer_account": {
+      "type": "string"
+     },
+     "payer_balance": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "sim_error": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "intent_id",
+     "status",
+     "recipient",
+     "mint",
+     "decimals",
+     "amount",
+     "amount_ui",
+     "reference",
+     "expiry",
+     "expiry_unix",
+     "months",
+     "amount_minor",
+     "currency",
+     "solana_pay_url",
+     "refused"
+    ]
+   },
+   "close.DeleteBody": {
+    "type": "object",
+    "properties": {
+     "confirm": {
+      "type": "string",
+      "enum": [
+       "DELETE"
+      ]
+     }
+    },
+    "required": [
+     "confirm"
+    ]
+   },
+   "close.Deleted": {
+    "type": "object",
+    "properties": {
+     "deleted": {
+      "type": "boolean"
+     },
+     "keys_revoked": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "renewals_stopped": {
+      "type": "integer",
+      "format": "int64"
+     }
+    },
+    "required": [
+     "deleted",
+     "keys_revoked",
+     "renewals_stopped"
+    ]
+   },
+   "close.Term": {
+    "type": "object",
+    "properties": {
+     "module": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "plan": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "ends_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "renews": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "module",
+     "plan",
+     "ends_at",
+     "renews"
+    ]
+   },
+   "close.DeletionView": {
+    "type": "object",
+    "properties": {
+     "confirm": {
+      "type": "string"
+     },
+     "blocked": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "keys": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "credits_remaining": {
+      "type": "integer",
+      "format": "int64"
+     },
+     "terms": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/close.Term"
+      }
+     }
+    },
+    "required": [
+     "confirm",
+     "blocked",
+     "keys",
+     "credits_remaining",
+     "terms"
+    ]
    }
   }
  },
@@ -28,7 +2324,7 @@
   "/v1/keys": {
    "get": {
     "operationId": "get_v1_keys",
-    "summary": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value",
+    "summary": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at. Never a key's value",
     "description": "Request: none.",
     "security": [
      {
@@ -41,23 +2337,36 @@
     "x-scope": "keys:read",
     "responses": {
      "200": {
-      "description": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at (allow_domains and allow_ips are old lists the doors do not use). Never a key's value"
+      "description": "your service keys, oldest first, revoked ones included: key_id, prefix, name, tier, scope, status, per_method_caps, max_connections, max_inflight, ip_allow, created_at, rotated_at, revoked_at. Never a key's value",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/keys.KeyView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    },
    "post": {
     "operationId": "post_v1_keys",
     "summary": "{key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module",
-    "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc and quote (rpc, ws and grpc when left out; quote needs the Quote module).",
+    "description": "Request: {name, scope}, both optional: name up to 48 characters, scope a list of rpc, ws, grpc, quote and das (rpc, ws, grpc and das when left out; quote needs the Quote module).",
     "security": [
      {
       "accountApiKey": []
@@ -69,16 +2378,35 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module"
+      "description": "{key_id, prefix, raw_key, name}: the key's value, shown here once and mailed to the account's email address when it has one. 409 at your plan's count of service keys, or for quote without the module",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.CreateResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "requestBody": {
@@ -86,7 +2414,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.CreateReq"
        },
        "example": {
         "name": "indexer",
@@ -116,16 +2444,32 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{prefix, raw_key}: a new value for the same key, mailed like a new key's; the old one is refused at once"
+      "description": "{prefix, raw_key}: a new value for the same key, mailed like a new key's; the old one is refused at once",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.RotateResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -134,7 +2478,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -156,16 +2501,32 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{applied}: true the first time, false on a repeat; every door refuses the key at once, and the first revoke mails a notice"
+      "description": "{applied}: true the first time, false on a repeat; every door refuses the key at once, and the first revoke mails a notice",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.RevokeResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -174,7 +2535,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -196,16 +2558,32 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{deleted}: the key is gone from the list, and a live one is refused at every door; a repeat is 404"
+      "description": "{deleted}: the key is gone from the list, and a live one is refused at every door; a repeat is 404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.DeleteResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -214,7 +2592,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -236,16 +2615,35 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{name}"
+      "description": "{name}",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.RenameResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -254,7 +2652,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ],
@@ -263,7 +2662,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.RenameReq"
        },
        "example": {
         "name": "indexer"
@@ -277,7 +2676,7 @@
    "patch": {
     "operationId": "patch_v1_keys_id_scope",
     "summary": "{key_id, scope}; the doors follow within a second",
-    "description": "Request: {scope}: the whole new list of planes, at least one.",
+    "description": "Request: {scope}: the whole new list of planes (rpc, ws, grpc, quote, das), at least one; a plane left out is removed.",
     "security": [
      {
       "accountApiKey": []
@@ -289,16 +2688,38 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{key_id, scope}; the doors follow within a second"
+      "description": "{key_id, scope}; the doors follow within a second",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.ScopeResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -307,7 +2728,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ],
@@ -316,12 +2738,13 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.ScopeReq"
        },
        "example": {
         "scope": [
          "rpc",
-         "grpc"
+         "grpc",
+         "das"
         ]
        }
       }
@@ -333,7 +2756,7 @@
    "patch": {
     "operationId": "patch_v1_keys_id_caps",
     "summary": "the stored list; the doors follow at once",
-    "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan or gpa.",
+    "description": "Request: {per_method_caps}: the whole new list of {method_class, rps_ceiling (0 or left out: no ceiling), allow (true when left out)}; [] clears every cap. method_class is o1_cached, bounded_read, bounded_slot, write_send, compute, bounded_disk, range, scan, gpa or das (the 10 DAS methods together).",
     "security": [
      {
       "accountApiKey": []
@@ -345,16 +2768,38 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "the stored list; the doors follow at once"
+      "description": "the stored list; the doors follow at once",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/keys.MethodCapView"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -363,7 +2808,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ],
@@ -372,7 +2818,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.CapsReq"
        },
        "example": {
         "per_method_caps": [
@@ -404,16 +2850,35 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{key_id, ip_allow}; a call from any other address is 403 at the door"
+      "description": "{key_id, ip_allow}; a call from any other address is 403 at the door",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.AllowlistResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -422,7 +2887,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ],
@@ -431,7 +2897,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.AllowlistReq"
        },
        "example": {
         "ip_allow": [
@@ -460,16 +2926,35 @@
     "x-scope": "keys:write",
     "responses": {
      "200": {
-      "description": "{max_connections, max_inflight}; the WebSocket and stream doors follow within 5 minutes"
+      "description": "{max_connections, max_inflight}; the WebSocket and stream doors follow within 5 minutes",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.LimitsResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -478,7 +2963,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ],
@@ -487,7 +2973,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/keys.LimitsReq"
        },
        "example": {
         "max_connections": 100,
@@ -514,16 +3000,29 @@
     "x-scope": "webhooks:read",
     "responses": {
      "200": {
-      "description": "your webhooks, without their address lists"
+      "description": "your webhooks, without their address lists",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/webhooks.WebhookView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    },
@@ -542,16 +3041,45 @@
     "x-scope": "webhooks:write",
     "responses": {
      "200": {
-      "description": "{webhook, secret}: the signing secret, shown here once"
+      "description": "{webhook, secret}: the signing secret, shown here once",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.CreateResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/webhooks.CreateReq"
+       }
+      }
      }
     }
    }
@@ -572,16 +3100,32 @@
     "x-scope": "webhooks:read",
     "responses": {
      "200": {
-      "description": "the webhook with its addresses"
+      "description": "the webhook with its addresses",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.WebhookView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -590,7 +3134,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -610,16 +3155,38 @@
     "x-scope": "webhooks:write",
     "responses": {
      "200": {
-      "description": "the webhook"
+      "description": "the webhook",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.WebhookView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -628,10 +3195,21 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
-    ]
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/webhooks.UpdateReq"
+       }
+      }
+     }
+    }
    },
    "delete": {
     "operationId": "delete_v1_webhooks_id",
@@ -648,16 +3226,32 @@
     "x-scope": "webhooks:write",
     "responses": {
      "200": {
-      "description": "{\"deleted\": true}"
+      "description": "{\"deleted\": true}",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.DeleteResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -666,7 +3260,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -688,16 +3283,35 @@
     "x-scope": "webhooks:read",
     "responses": {
      "200": {
-      "description": "its delivery log, newest first"
+      "description": "its delivery log, newest first",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/webhooks.DeliveryView"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -706,7 +3320,27 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "50 when left out, 200 at most",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     },
+     {
+      "name": "before",
+      "in": "query",
+      "required": false,
+      "description": "a row's cursor, or a Unix-ms time",
+      "schema": {
+       "type": "string"
       }
      }
     ]
@@ -728,16 +3362,32 @@
     "x-scope": "webhooks:write",
     "responses": {
      "200": {
-      "description": "{secret, secret_hint, previous_valid_until}"
+      "description": "{secret, secret_hint, previous_valid_until}",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.RotateResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -746,7 +3396,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -768,16 +3419,35 @@
     "x-scope": "webhooks:write",
     "responses": {
      "200": {
-      "description": "how one signed test event went"
+      "description": "how one signed test event went",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/webhooks.TestView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -786,7 +3456,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -808,18 +3479,79 @@
     "x-scope": "usage:read",
     "responses": {
      "200": {
-      "description": "[{utc_day, method, method_class, call_count, credits_charged}], oldest day first; with group=key each row also carries its key_id (null for calls made before a key was rotated, or by a key since deleted). A key_id that is not yours is 404, and an answer of more than 50,000 rows is 400: narrow the range or name a key. Answers are kept 15 s"
+      "description": "[{utc_day, method, method_class, call_count, credits_charged}], oldest day first; with group=key each row also carries its key_id (null for calls made before a key was rotated, or by a key since deleted). A key_id that is not yours is 404, and an answer of more than 50,000 rows is 400: narrow the range or name a key. Answers are kept 15 s",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/usage.DayRow"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
-    }
+    },
+    "parameters": [
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "first day, YYYY-MM-DD; with to",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "last day, YYYY-MM-DD, included",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "key_id",
+      "in": "query",
+      "required": false,
+      "description": "one service key",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     },
+     {
+      "name": "group",
+      "in": "query",
+      "required": false,
+      "description": "one row per service key",
+      "schema": {
+       "type": "string",
+       "enum": [
+        "key"
+       ]
+      }
+     }
+    ]
    }
   },
   "/v1/keys/usage": {
@@ -838,16 +3570,26 @@
     "x-scope": "usage:read",
     "responses": {
      "200": {
-      "description": "{period_start, period_end, account_credits, keys: [{key_id, credits, calls}]}: this calendar month (UTC) per service key, revoked ones included. Calls made before a key was rotated, or by a key since deleted, count in account_credits only; account_credits is null when the read failed"
+      "description": "{period_start, period_end, account_credits, keys: [{key_id, credits, calls}]}: this calendar month (UTC) per service key, revoked ones included. Calls made before a key was rotated, or by a key since deleted, count in account_credits only; account_credits is null when the read failed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.KeyUsageView"
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -868,16 +3610,29 @@
     "x-scope": "usage:read",
     "responses": {
      "200": {
-      "description": "[{key_id, rps_current, class_rps}]: calls a second over the last 20 s for each live key, in all and per method class"
+      "description": "[{key_id, rps_current, class_rps}]: calls a second over the last 20 s for each live key, in all and per method class",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/keys.KeyLoad"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -898,18 +3653,67 @@
     "x-scope": "usage:read",
     "responses": {
      "200": {
-      "description": "[{hour, key_id, method_class, calls, credits_charged, errors, resp_bytes}], kept 90 days; the newest hour can be two hours behind. Answers are kept 60 s"
+      "description": "[{hour, key_id, method_class, calls, credits_charged, errors, resp_bytes}], kept 90 days; the newest hour can be two hours behind. Answers are kept 60 s",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/usage.HourRow"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
-    }
+    },
+    "parameters": [
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "RFC 3339 time; with to",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "RFC 3339 time",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "key_id",
+      "in": "query",
+      "required": false,
+      "description": "one service key",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     }
+    ]
    }
   },
   "/v1/usage/latency": {
@@ -928,18 +3732,67 @@
     "x-scope": "usage:read",
     "responses": {
      "200": {
-      "description": "[{hour, key_id, method_class, calls, p50_ms, p95_ms, p99_ms}]: milliseconds with up to 3 decimals, kept 90 days. Answers are kept 60 s"
+      "description": "[{hour, key_id, method_class, calls, p50_ms, p95_ms, p99_ms}]: milliseconds with up to 3 decimals, kept 90 days. Answers are kept 60 s",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/usage.LatencyRow"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
-    }
+    },
+    "parameters": [
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "RFC 3339 time; with to",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "RFC 3339 time",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "key_id",
+      "in": "query",
+      "required": false,
+      "description": "one service key",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     }
+    ]
    }
   },
   "/v1/account": {
@@ -958,16 +3811,80 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "{account_id, email, wallet, status, created_at, tier, term, payments}: the plan and its term, and the last 24 payments"
+      "description": "{account_id, email, wallet, status, created_at, tier, term, payments}: the plan and its term, and the last 24 payments",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/signup.AccountFull"
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   },
+   "delete": {
+    "operationId": "delete_v1_account",
+    "summary": "{deleted, keys_revoked, renewals_stopped}",
+    "description": "Request: {confirm}: exactly \"DELETE\".",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{deleted, keys_revoked, renewals_stopped}",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/close.Deleted"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/close.DeleteBody"
+       }
+      }
      }
     }
    }
@@ -988,16 +3905,26 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "{granted, used, remaining}, in credits"
+      "description": "{granted, used, remaining}, in credits",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/balance.BalanceView"
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1018,16 +3945,29 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "[{period_start, period_end, granted, used, current}]: credits per month, the running month first"
+      "description": "[{period_start, period_end, granted, used, current}]: credits per month, the running month first",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/balance.InvoiceView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1048,16 +3988,29 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "your payments, newest first, 1,000 at most: id, amount_minor, currency, status, method, tier or module and plan, months, credits_granted, reference, paid_at"
+      "description": "your payments, newest first, 1,000 at most: id, amount_minor, currency, status, method, tier or module and plan, months, credits_granted, reference, paid_at",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/signup.PaymentView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1078,16 +4031,29 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "every module with its plans and what the account holds of it"
+      "description": "every module with its plans and what the account holds of it",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/modules.ModuleView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1108,16 +4074,32 @@
     "x-scope": "account:read",
     "responses": {
      "200": {
-      "description": "one on-chain payment of yours and its status: open, paid, held or expired"
+      "description": "one on-chain payment of yours and its status: open, paid, held or expired",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/crypto.IntentResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -1126,7 +4108,8 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -1148,16 +4131,38 @@
     "x-scope": "modules:write",
     "responses": {
      "200": {
-      "description": "the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit"
+      "description": "the module as the account now holds it; 409 \"module not available yet\", 429 past the change limit",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/modules.ModuleView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -1175,7 +4180,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/modules.AddReq"
        },
        "example": {
         "plan": "free"
@@ -1183,6 +4188,57 @@
       }
      }
     }
+   },
+   "delete": {
+    "operationId": "delete_v1_modules_module",
+    "summary": "the module as the account now holds it, removed",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "the module as the account now holds it, removed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/modules.ModuleView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "module",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
    }
   },
   "/v1/api-key": {
@@ -1198,16 +4254,26 @@
     "x-scope": null,
     "responses": {
      "200": {
-      "description": "the calling key's own record"
+      "description": "the calling key's own record",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/account_keys.KeyView"
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1228,16 +4294,35 @@
     "x-scope": null,
     "responses": {
      "200": {
-      "description": "[{ts, action, request_id, detail}]: what the key changed, newest first; another key's id is 404"
+      "description": "[{ts, action, request_id, detail}]: what the key changed, newest first; another key's id is 404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/account_keys.Activity"
+         }
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -1246,7 +4331,28 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "50 when left out, 200 at most",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     },
+     {
+      "name": "before",
+      "in": "query",
+      "required": false,
+      "description": "a Unix-ms time",
+      "schema": {
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
@@ -1265,16 +4371,35 @@
     "x-scope": null,
     "responses": {
      "200": {
-      "description": "the new key's record with its raw_key, this once; 409 at 5 live keys, 403 while the account is not active"
+      "description": "the new key's record with its raw_key, this once; 409 at 5 live keys, 403 while the account is not active",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/account_keys.Created"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "requestBody": {
@@ -1282,7 +4407,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "type": "object"
+        "$ref": "#/components/schemas/account_keys.CreateReq"
        },
        "example": {
         "name": "ci-agent",
@@ -1306,16 +4431,29 @@
     "x-scope": null,
     "responses": {
      "200": {
-      "description": "the live keys' records, newest first"
+      "description": "the live keys' records, newest first",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/account_keys.KeyView"
+         }
+        }
+       }
+      }
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     }
    }
@@ -1333,16 +4471,32 @@
     "x-scope": null,
     "responses": {
      "200": {
-      "description": "{api_key_id, revoked}; a repeat answers the same"
+      "description": "{api_key_id, revoked}; a repeat answers the same",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/account_keys.Revoked"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
      },
      "401": {
-      "description": "no valid credential, or a call closed to account API keys"
+      "$ref": "#/components/responses/Unauthorized"
      },
      "403": {
-      "description": "the key's access does not cover the call, the caller's address is not allowed, or the account is not active"
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
      },
      "429": {
-      "description": "too many calls: wait Retry-After seconds"
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
      }
     },
     "parameters": [
@@ -1351,7 +4505,752 @@
       "in": "path",
       "required": true,
       "schema": {
-       "type": "integer"
+       "type": "integer",
+       "format": "int64"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/signup/challenge": {
+   "get": {
+    "operationId": "get_v1_signup_challenge",
+    "summary": "{challenge, difficulty}: a proof-of-work puzzle, asked for by a first sign-in",
+    "description": "Request: none.",
+    "security": [],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{challenge, difficulty}: a proof-of-work puzzle, asked for by a first sign-in",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/signup.ChallengeResp"
+        }
+       }
+      }
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   }
+  },
+  "/v1/terms": {
+   "get": {
+    "operationId": "get_v1_terms",
+    "summary": "{version, url}: the terms a new account accepts; an empty version means none are asked",
+    "description": "Request: none.",
+    "security": [],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{version, url}: the terms a new account accepts; an empty version means none are asked",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/signup.Terms"
+        }
+       }
+      }
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   }
+  },
+  "/v1/plans": {
+   "get": {
+    "operationId": "get_v1_plans",
+    "summary": "{plans, quote}: every plan and Quote plan with its price; with a session, what this account can buy",
+    "description": "Request: none.",
+    "security": [
+     {},
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{plans, quote}: every plan and Quote plan with its price; with a session, what this account can buy",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.PlansResp"
+        }
+       }
+      }
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   }
+  },
+  "/v1/auth/wallet": {
+   "post": {
+    "operationId": "post_v1_auth_wallet",
+    "summary": "{nonce_token, message} for \"challenge\"; {session_token, account} for \"verify\"",
+    "description": "Request: {step, wallet}: step \"challenge\" answers a message to sign; step \"verify\" takes nonce_token and signature (and pow on a first sign-in).",
+    "security": [],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{nonce_token, message} for \"challenge\"; {session_token, account} for \"verify\"",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/wallet.ChallengeResp"
+          },
+          {
+           "$ref": "#/components/schemas/signup.SessionResp"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/wallet.LoginReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/login/pin": {
+   "post": {
+    "operationId": "post_v1_login_pin",
+    "summary": "{pin_token}: a six-digit code is mailed; the answer is the same for every address",
+    "description": "Request: {email}, and pow for an address with no account yet.",
+    "security": [],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{pin_token}: a six-digit code is mailed; the answer is the same for every address",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/signup.PinStartResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/signup.PinStartReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/login/pin/verify": {
+   "post": {
+    "operationId": "post_v1_login_pin_verify",
+    "summary": "{session_token, account}",
+    "description": "Request: {pin_token, code}.",
+    "security": [],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{session_token, account}",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/signup.SessionResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/signup.PinVerifyReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/logout": {
+   "post": {
+    "operationId": "post_v1_logout",
+    "summary": "204, no body: every session of the account ends",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "204": {
+      "description": "204, no body: every session of the account ends"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   }
+  },
+  "/v1/account/link-wallet": {
+   "post": {
+    "operationId": "post_v1_account_link_wallet",
+    "summary": "{nonce_token, message} for \"nonce\"; the account with a new session_token for \"link\" (the old sessions end)",
+    "description": "Request: {step, wallet}: step \"nonce\" answers a message to sign; step \"link\" takes nonce_token and signature.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{nonce_token, message} for \"nonce\"; the account with a new session_token for \"link\" (the old sessions end)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/wallet.ChallengeResp"
+          },
+          {
+           "$ref": "#/components/schemas/wallet.LinkedResp"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/wallet.LinkReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/keys/{id}/secret": {
+   "post": {
+    "operationId": "post_v1_keys_id_secret",
+    "summary": "{available, raw_key}: the key's value while the account still holds it, else available false",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{available, raw_key}: the key's value while the account still holds it, else available false",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/keys.SecretResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "format": "int64"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/billing/checkout": {
+   "post": {
+    "operationId": "post_v1_billing_checkout",
+    "summary": "{url, session_id, amount_minor, currency, recurring, term}: the card checkout page to open",
+    "description": "Request: {tier} for a plan, or {module, plan} for a module plan; recurring for a card subscription.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{url, session_id, amount_minor, currency, recurring, term}: the card checkout page to open",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.CheckoutResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/billing.CheckoutReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/billing/crypto-intent": {
+   "post": {
+    "operationId": "post_v1_billing_crypto_intent",
+    "summary": "one on-chain payment to make: recipient, amount, reference, expiry, and a ready transaction when payer is given",
+    "description": "Request: {tier} or {module, plan}; months, mint (USDC or USDT) and the paying wallet as payer.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "one on-chain payment to make: recipient, amount, reference, expiry, and a ready transaction when payer is given",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/crypto.IntentResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "422": {
+      "$ref": "#/components/responses/Unreadable"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/crypto.IntentReq"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/billing/portal": {
+   "post": {
+    "operationId": "post_v1_billing_portal",
+    "summary": "{url}: the card provider's page for the subscription",
+    "description": "Request: none; ?module=.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{url}: the card provider's page for the subscription",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.PortalResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "module",
+      "in": "query",
+      "required": false,
+      "description": "a module's renewal instead of the plan's",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/billing/renewal": {
+   "post": {
+    "operationId": "post_v1_billing_renewal",
+    "summary": "{module, renews, ends_at}: the renewal is cancelled, the term runs to its end; 409 when there is none",
+    "description": "Request: none; ?module=.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{module, renews, ends_at}: the renewal is cancelled, the term runs to its end; 409 when there is none",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.RenewalView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "module",
+      "in": "query",
+      "required": false,
+      "description": "a module's renewal instead of the plan's",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   },
+   "delete": {
+    "operationId": "delete_v1_billing_renewal",
+    "summary": "{module, renews, ends_at}: the cancelled renewal is resumed; 409 when there is none",
+    "description": "Request: none; ?module=.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{module, renews, ends_at}: the cancelled renewal is resumed; 409 when there is none",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.RenewalView"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "409": {
+      "$ref": "#/components/responses/Conflict"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "module",
+      "in": "query",
+      "required": false,
+      "description": "a module's renewal instead of the plan's",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/account/deletion": {
+   "get": {
+    "operationId": "get_v1_account_deletion",
+    "summary": "{confirm, blocked, keys, credits_remaining, terms}: what deleting the account would end",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{confirm, blocked, keys, credits_remaining, terms}: what deleting the account would end",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/close.DeletionView"
+        }
+       }
+      }
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    }
+   }
+  },
+  "/v1/payments/{id}/document": {
+   "get": {
+    "operationId": "get_v1_payments_id_document",
+    "summary": "{pdf, page}: the card provider's receipt links; an on-chain payment is 404",
+    "description": "Request: none.",
+    "security": [
+     {
+      "session": []
+     }
+    ],
+    "x-scope": null,
+    "responses": {
+     "200": {
+      "description": "{pdf, page}: the card provider's receipt links; an on-chain payment is 404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/billing.DocumentResp"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/BadRequest"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     },
+     "403": {
+      "$ref": "#/components/responses/Forbidden"
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     },
+     "429": {
+      "$ref": "#/components/responses/TooMany"
+     },
+     "default": {
+      "$ref": "#/components/responses/Failure"
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "format": "int64"
       }
      }
     ]
